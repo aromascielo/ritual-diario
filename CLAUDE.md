@@ -2,7 +2,7 @@
 
 > Especificación viva del proyecto. Claude la lee siempre antes de trabajar en esta carpeta.
 > Si una decisión cambia, se actualiza **este archivo** en el mismo cambio que la implementa.
-> Versión: 2.0 · Última revisión: 18 nov 2026
+> Versión: 2.1 · Última revisión: 18 nov 2026 (fase 2: login y app diaria)
 
 ---
 
@@ -200,8 +200,12 @@ Por eso el manifest usa `display: standalone` y el login (código de un solo uso
 ## 8. Login y seguridad
 
 - Login con **código de un solo uso** por mail (no link mágico: el link fallaba desde la app de Gmail).
-- **Solo entran personas invitadas**: el registro público está cerrado (`shouldCreateUser: false` en la app,
-  y en la base el disparador `privado.al_crear_usuario` rechaza mails que no están en `team_invites`).
+- **Solo entran personas invitadas**: la barrera está en la base. La app pide el código con `shouldCreateUser: true`
+  (la primera vez Supabase crea la cuenta) y el disparador `privado.al_crear_usuario` rechaza cualquier mail que no
+  esté en `team_invites`, así que la cuenta no llega a crearse. (Decisión del 18 nov 2026: con `shouldCreateUser: false`
+  una persona invitada que todavía no tiene cuenta no podía recibir el código.)
+- En Supabase Auth tienen que estar activados "Allow new users to sign up" y el código (`{{ .Token }}`) en las
+  plantillas **Confirm signup** (primer ingreso) y **Magic Link** (los siguientes). Pasos en `README.md`.
 - Mail saliente: SMTP de Gmail de Aromas Cielo con contraseña de aplicación (configurado en Supabase Auth, nunca en el código).
 - Las funciones SQL `security definer` tienen `search_path` fijo y se les revoca `EXECUTE` a `anon` (y a `authenticated` cuando no corresponde).
 - Todo texto que escribe una persona (títulos, comentarios, motivos, notas) se muestra **escapado**: nunca `innerHTML` con datos.
@@ -233,7 +237,10 @@ permite probar, evitar que un cambio rompa otra pantalla y mantener la app a med
 | Entorno | Supabase | Web |
 |---|---|---|
 | v1 (actual, no tocar) | `aromascielo's app` (`ihprsixwwvlxmxszknti`, EE. UU.) | `claufer.netlify.app` |
-| v2 (este proyecto) | `ritual-diario` (`oehrvzijfktxcoyfommj`, San Pablo) | Cloudflare (URL a definir en fase 6) |
+| v2 (este proyecto) | `ritual-diario` (`oehrvzijfktxcoyfommj`, San Pablo) | Cloudflare Worker `ritual-diario` (`web/wrangler.jsonc`), dirección `*.workers.dev` |
+
+La URL y la clave *publishable* de Supabase están en `web/src/lib/config.ts` (son públicas por diseño; se pueden
+reemplazar con `VITE_SUPABASE_URL` / `VITE_SUPABASE_KEY`). Nunca poner la clave secreta en la app.
 
 Mientras se construye, `ritual-diario` funciona como entorno de prueba. Antes del cambio (fase 6) se borran los datos de prueba
 y se cargan los reales. Después se crea un segundo proyecto solo para pruebas (el plan gratis permite 2 activos).

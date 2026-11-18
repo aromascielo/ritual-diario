@@ -1,0 +1,17 @@
+{
+  "name": "Ritual Diario · Aromas Cielo",
+  "short_name": "Ritual Diario",
+  "description": "Tareas y objetivos del equipo Aromas Cielo",
+  "lang": "es-AR",
+  "start_url": "/#/hoy",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E3E4DB",
+  "theme_color": "#6F7C12",
+  "icons": [
+    { "src": "/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icono-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
