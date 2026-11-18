@@ -11,55 +11,19 @@ hasta que la nueva esté probada.
 
 ## Pasos pendientes para vos (fase 2)
 
-### 1. Que el mail traiga un código (Supabase, 5 minutos)
+### 1 y 2. Mail con código y dirección de prueba — ✅ hechos (18 nov 2026)
 
-Supabase manda por defecto un link. Hay que cambiar dos plantillas para que mande un código de números.
-
-1. Entrá a **https://supabase.com/dashboard** y abrí el proyecto **ritual-diario** (no el viejo "aromascielo's app").
-2. En el menú de la izquierda tocá **Authentication** y después **Emails** (en algunas versiones se llama **Email Templates**).
-3. Tocá la plantilla **Confirm signup** (es el mail del primer ingreso).
-4. En **Subject** escribí: `Tu código para entrar a Ritual Diario`
-5. En el cuadro grande del mensaje (**Message body**) borrá todo y pegá esto:
-
-   ```html
-   <h2>Ritual Diario · Aromas Cielo</h2>
-   <p>Tu código para entrar es:</p>
-   <p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
-   <p>Escribilo en la app. Si no lo pediste, ignorá este mail.</p>
-   ```
-
-6. Tocá **Save changes**.
-7. Repetí los pasos 4 a 6 en la plantilla **Magic Link** (es el mail de los ingresos siguientes).
-8. En el mismo menú **Authentication**, abrí **Sign In / Providers** (o **Providers**) → **Email** y revisá que
-   **Allow new users to sign up** esté **activado**. Tranqui: solo pueden entrar los mails invitados; la base rechaza al resto.
-9. En **Authentication** → **Emails** fijate si hay una sección **SMTP Settings** con el Gmail de Aromas Cielo cargado.
-   Si **no** está, igual podés probar: Supabase manda pocos mails por hora y solo a mails del equipo de Supabase.
-   Para cuando se sume Laura conviene configurarlo; Claude te guía ese día.
-
-### 2. Publicar la app en una dirección de prueba (Cloudflare, 10 minutos)
-
-1. Entrá a **https://dash.cloudflare.com** (si no tenés cuenta, creá una gratis con el Gmail de Aromas Cielo).
-2. En el menú de la izquierda tocá **Workers & Pages** (puede estar dentro de **Compute**).
-3. Tocá **Create application** (o **Create**).
-4. Al lado de **Import a repository** tocá **Get started**. Ojo: tiene que ser un **Worker**; si la pantalla dice "Pages", volvé atrás.
-5. Elegí **GitHub** y tocá **Connect GitHub** (o **Add account**). Se abre GitHub:
-   - Elegí la cuenta **aromascielo**.
-   - En "Repository access" elegí **Only select repositories** y marcá **ritual-diario**.
-   - Tocá **Install & Authorize**.
-6. De vuelta en Cloudflare, elegí el repositorio **ritual-diario**.
-7. Completá la configuración así:
-   - **Project name**: `ritual-diario` (tiene que ser exactamente este nombre).
-   - **Build command**: `npm run build`
-   - **Deploy command**: `npx wrangler deploy` (suele venir escrito).
-   - Abrí **Advanced settings** y en **Root directory** (o **Path**) escribí: `web`
-8. Tocá **Save and Deploy** (o **Deploy**) y esperá 1 o 2 minutos.
-9. Cuando termine, Cloudflare te muestra una dirección del tipo `https://ritual-diario.<algo>.workers.dev`. **Copiala y pasásela a Claude.**
-
-Desde ahí, cada cambio que Claude suba a GitHub se publica solo en esa misma dirección.
+Claude los configuró desde el navegador de la app de Claude:
+- **Supabase** (proyecto ritual-diario → Authentication → Emails): los mails salen desde el Gmail de Aromas Cielo
+  (SMTP) y las plantillas **Confirm sign up** y **Magic link or OTP** traen el código.
+  Si algún día cambiás la contraseña de Gmail o borrás la contraseña de aplicación "Supabase Ritual Diario",
+  hay que crear una nueva y pegarla en **SMTP Settings → Password**.
+- **Cloudflare** (Workers & Pages → ritual-diario): conectado a GitHub (solo el repositorio ritual-diario).
+  Cada cambio que Claude sube se publica solo en **https://ritual-diario.aromascielo.workers.dev**.
 
 ### 3. Probar en el celular
 
-1. Abrí la dirección en el celular (Chrome en Android).
+1. Abrí **https://ritual-diario.aromascielo.workers.dev** en el celular (Chrome en Android).
 2. Menú **⋮** → **Agregar a la pantalla principal** (o **Instalar app**).
 3. Abrí la app desde el ícono, escribí `aromascielo@gmail.com`, tocá **Recibir código** y copiá el código del mail.
 4. Probá: agregar una tarea para hoy y otra para mañana, tildarla, abrir una tarea, omitirla con un motivo, volverla a pendiente y comentar.

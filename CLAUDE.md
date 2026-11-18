@@ -206,7 +206,9 @@ Por eso el manifest usa `display: standalone` y el login (código de un solo uso
   una persona invitada que todavía no tiene cuenta no podía recibir el código.)
 - En Supabase Auth tienen que estar activados "Allow new users to sign up" y el código (`{{ .Token }}`) en las
   plantillas **Confirm signup** (primer ingreso) y **Magic Link** (los siguientes). Pasos en `README.md`.
-- Mail saliente: SMTP de Gmail de Aromas Cielo con contraseña de aplicación (configurado en Supabase Auth, nunca en el código).
+- Mail saliente: SMTP de Gmail de Aromas Cielo (`smtp.gmail.com`, puerto 465, remitente "Ritual Diario · Aromas Cielo") con
+  contraseña de aplicación, configurado en Supabase Auth el 18 nov 2026 (nunca en el código). Sin SMTP propio Supabase
+  no deja editar las plantillas y manda solo un link.
 - Las funciones SQL `security definer` tienen `search_path` fijo y se les revoca `EXECUTE` a `anon` (y a `authenticated` cuando no corresponde).
 - Todo texto que escribe una persona (títulos, comentarios, motivos, notas) se muestra **escapado**: nunca `innerHTML` con datos.
 - Revisar `get_advisors` (seguridad y rendimiento) de Supabase después de cada cambio de base de datos.
@@ -237,10 +239,14 @@ permite probar, evitar que un cambio rompa otra pantalla y mantener la app a med
 | Entorno | Supabase | Web |
 |---|---|---|
 | v1 (actual, no tocar) | `aromascielo's app` (`ihprsixwwvlxmxszknti`, EE. UU.) | `claufer.netlify.app` |
-| v2 (este proyecto) | `ritual-diario` (`oehrvzijfktxcoyfommj`, San Pablo) | Cloudflare Worker `ritual-diario` (`web/wrangler.jsonc`), dirección `*.workers.dev` |
+| v2 (este proyecto) | `ritual-diario` (`oehrvzijfktxcoyfommj`, San Pablo) | Cloudflare Worker `ritual-diario` → **https://ritual-diario.aromascielo.workers.dev** |
 
 La URL y la clave *publishable* de Supabase están en `web/src/lib/config.ts` (son públicas por diseño; se pueden
 reemplazar con `VITE_SUPABASE_URL` / `VITE_SUPABASE_KEY`). Nunca poner la clave secreta en la app.
+
+Cloudflare Workers Builds (cuenta de aromascielo@gmail.com) está conectado al repositorio con carpeta raíz `/web`,
+build `npm run build`, deploy `npx wrangler deploy` y versiones de prueba activadas para las ramas (`npx wrangler preview`).
+La app de Cloudflare en GitHub tiene acceso solo a `ritual-diario`.
 
 Mientras se construye, `ritual-diario` funciona como entorno de prueba. Antes del cambio (fase 6) se borran los datos de prueba
 y se cargan los reales. Después se crea un segundo proyecto solo para pruebas (el plan gratis permite 2 activos).

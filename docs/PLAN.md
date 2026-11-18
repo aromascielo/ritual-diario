@@ -18,8 +18,8 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - [x] Responder las preguntas abiertas.
 - [x] Darle a Claude permiso para subir al repositorio (app de Claude instalada en GitHub).
 - [x] Pegar el texto de `docs/instrucciones-proyecto.md` en las instrucciones del Proyecto de claude.ai.
-- [ ] Fase 2: cambiar las plantillas de mail de Supabase para que manden el código (README.md, paso 1).
-- [ ] Fase 2: conectar Cloudflare con GitHub y pasarle a Claude la dirección `*.workers.dev` (README.md, paso 2).
+- [x] Fase 2: Gmail conectado en Supabase (SMTP) y plantillas con el código (lo hizo Claude desde el navegador, 18 nov).
+- [x] Fase 2: Cloudflare conectado con GitHub; app publicada en https://ritual-diario.aromascielo.workers.dev (18 nov).
 - [ ] Fase 2: probar en el celular y contarle a Claude qué anduvo y qué cambiar (README.md, paso 3).
 
 ## Estado de la base de datos (proyecto `ritual-diario`, `oehrvzijfktxcoyfommj`)
@@ -38,3 +38,5 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
   agregar tarea única con fecha y horario, vista inicial de Objetivos (avance_objetivos), Configuración (nombre,
   apariencia, cerrar sesión). Probada en navegador con datos simulados y las llamadas probadas contra la base
   (se deshace sola): 8/8 OK. Decisión: login con `shouldCreateUser: true` (ver CLAUDE.md §8).
+- 18 nov 2026 — Claude configuró desde el navegador: SMTP de Gmail y plantillas "Confirm sign up" y "Magic link or OTP"
+  con `{{ .Token }}` en Supabase; Worker `ritual-diario` en Cloudflare conectado a GitHub (solo este repositorio).
