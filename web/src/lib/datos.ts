@@ -27,7 +27,7 @@ function ok<T>(r: { data: T | null; error: unknown }): T {
 // Equipo -------------------------------------------------------------------
 export async function traerEquipo(): Promise<{ perfiles: Perfil[]; areas: Area[]; miembros: Miembro[] }> {
   const [p, a, m] = await Promise.all([
-    supabase.from('profiles').select('id,nombre,email,rol,activo,carga_ventas').order('nombre'),
+    supabase.from('profiles').select('id,nombre,email,rol,activo,carga_ventas,push_alertas').order('nombre'),
     supabase.from('areas').select('id,nombre,descripcion,color,emoji,orden,activa').order('orden'),
     supabase.from('area_members').select('area_id,profile_id,rol_area'),
   ])

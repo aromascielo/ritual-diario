@@ -10,6 +10,7 @@ export interface Perfil {
   rol: Rol
   activo: boolean
   carga_ventas: boolean
+  push_alertas: boolean
 }
 
 export interface Area {

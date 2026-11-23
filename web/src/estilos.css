@@ -500,3 +500,17 @@ button.objetivo { width: 100%; text-align: left; border: none; cursor: pointer; 
 .dia-titulo::first-letter { text-transform: uppercase; }
 .gente-area { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-persona { display: inline-flex; align-items: center; text-decoration: none; color: inherit; min-height: 40px; }
+
+/* Alertas y notificaciones (fase 5) ------------------------------------------ */
+.campana { position: relative; font-size: 1.3rem; }
+.badge {
+  position: absolute; top: 4px; right: 2px; min-width: 20px; height: 20px; padding: 0 5px;
+  border-radius: 10px; background: var(--naranja); color: #fff; font-size: 0.72rem; font-weight: 700;
+  line-height: 20px; text-align: center; font-family: var(--sans);
+}
+.alerta { border-left-color: var(--naranja); }
+.alerta.leida { border-left-color: transparent; opacity: 0.75; }
+.alerta-cabeza { display: flex; align-items: center; gap: 6px; }
+.punto-nueva { width: 10px; height: 10px; border-radius: 50%; background: var(--naranja); flex: none; }
+.pasos { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.lista-simple { display: flex; flex-direction: column; gap: 6px; }

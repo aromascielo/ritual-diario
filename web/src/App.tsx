@@ -9,6 +9,8 @@ import { Objetivos } from './pantallas/objetivos/Objetivos'
 import { Configuracion } from './pantallas/config/Configuracion'
 import { Areas, DetalleArea } from './pantallas/areas/Areas'
 import { Equipo, DetalleMiembro } from './pantallas/equipo/Equipo'
+import { Alertas } from './pantallas/alertas/Alertas'
+import { ConfigNotificaciones } from './pantallas/config/ConfigNotificaciones'
 import { EditarTarea } from './pantallas/editar/EditarTarea'
 import { ConfigTareas } from './pantallas/config/ConfigTareas'
 import { ConfigAreas } from './pantallas/config/ConfigAreas'
@@ -67,6 +69,9 @@ export function App() {
     case 'area':
       pantalla = ruta.id ? <DetalleArea key={ruta.id} id={ruta.id} /> : <Areas />
       break
+    case 'alertas':
+      pantalla = <Alertas />
+      break
     case 'equipo':
       pantalla = <Equipo />
       break
@@ -83,6 +88,7 @@ export function App() {
       pantalla = ruta.id === 'tareas' ? <ConfigTareas />
         : ruta.id === 'areas' ? <ConfigAreas />
         : ruta.id === 'personas' ? <ConfigPersonas />
+        : ruta.id === 'notificaciones' ? <ConfigNotificaciones />
         : <Configuracion />
       break
     default:

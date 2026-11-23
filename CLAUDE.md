@@ -2,7 +2,7 @@
 
 > Especificación viva del proyecto. Claude la lee siempre antes de trabajar en esta carpeta.
 > Si una decisión cambia, se actualiza **este archivo** en el mismo cambio que la implementa.
-> Versión: 2.4 · Última revisión: 23 nov 2026 (fase 4: objetivos, Plan VEA y ventas)
+> Versión: 2.5 · Última revisión: 23 nov 2026 (fase 5: Áreas, Equipo, campana y push)
 
 ---
 
@@ -172,13 +172,19 @@ Rutas con hash (`#/hoy`, `#/tarea/<id>`, `#/area/<id>`, `#/objetivo/<id>`, `#/ve
    totales por canal, % tienda online y clientes mayoristas (de `resumen_ventas`), cargar / editar / borrar una por una.
    Un cliente mayorista escrito con otras mayúsculas se guarda con el nombre que ya estaba cargado.
    Al crear o editar una tarea se puede elegir el objetivo al que suma (tareas o numérico) y su peso (normal, doble, triple).
-5. **Áreas**: grilla con % al día de la semana; detalle con pestañas Hoy / Semana / Mes y filtros.
-6. **Equipo**: tarjeta por persona con áreas, pendientes, vencidas y % al día de semana y mes.
-7. **Alertas** (admin): lista en vivo con badge.
+5. **Áreas**: grilla con % al día de la semana (oliva desde 80 %, naranja debajo de 70 %), personas y vencidas;
+   detalle `#/area/<id>` con pestañas Hoy / Semana / Mes, filtros por estado y por persona, y quiénes están (líder primero).
+6. **Equipo**: tarjeta por persona con áreas (★ = líder), por hacer hoy, vencidas y % al día de semana y mes, más el total
+   del equipo; detalle `#/miembro/<id>` con las mismas pestañas. Las tareas hechas de tareas eliminadas se muestran
+   en estas pantallas porque cuentan en el %.
+7. **Alertas** (admin, `#/alertas`): campana con badge en el encabezado; lista en vivo (una suscripción Realtime por sesión),
+   tocar una la marca leída y abre la tarea, el objetivo o el área; "Marcar todas como leídas".
 8. **Configuración**: Tareas (lista de todas, por área, tocar = editar o eliminar), Áreas (admin: crear, editar emoji/color/orden,
    archivar), Personas (admin: invitar por mail **eligiendo rol y áreas desde la invitación**, editar rol / "carga ventas" /
-   áreas, dar de baja o reactivar, cancelar invitaciones), Notificaciones, Apariencia, Cerrar sesión.
-   Rutas: `#/config/tareas`, `#/config/areas`, `#/config/personas`, `#/persona/<id>`, `#/editar/<plantilla>`, `#/agregar`.
+   áreas, dar de baja o reactivar, cancelar invitaciones), Notificaciones (activar avisos en este celular, "Probar aviso",
+   pasos para iPhone y para avisos bloqueados; admin: "Que también me lleguen al celular"), Apariencia, Cerrar sesión.
+   Rutas: `#/config/tareas`, `#/config/areas`, `#/config/personas`, `#/config/notificaciones`, `#/persona/<id>`,
+   `#/editar/<plantilla>`, `#/agregar`.
 
 Estados vacíos amables ("Todo hecho por hoy 🌿"). Nada de `alert()`/`prompt()`/`confirm()` del navegador: diálogos propios.
 
@@ -203,6 +209,19 @@ Una función programada revisa **cada hora**. Silencio de 22:00 a 8:00 (lo acumu
 - Objetivo que pasa a "Atrasado" (una vez por objetivo y por semana).
 - Área por debajo del 70 % al día al cierre de la semana (domingo 20:00).
 Push de estas alertas a la admin: opcional, desactivado por defecto.
+
+**Cómo funciona por dentro** (migración `avisos`, fase 5):
+- Todo aviso entra a una cola en la base (`privado.push_cola`, con una clave única para no mandar dos veces).
+- pg_cron corre a cada hora en punto `privado.preparar_avisos()` (genera vencidas de los últimos 2 días, avisos previos de
+  hoy y mañana, el resumen a las 9, objetivos atrasados a las 9 y áreas bajo 70 % el domingo a las 20) y después
+  `privado.disparar_envio()`, que con pg_net llama a la Edge Function `notificaciones`.
+- Comentarios, alertas con push activado y "Probar aviso" llaman a `disparar_envio()` en el momento.
+- La función `notificaciones` (`supabase/functions/notificaciones`, sin JWT, exige la clave `x-clave`) se conecta directo a la
+  base, toma la cola con `privado.tomar_cola()` (de 22 a 8 solo sale "Probar aviso") y manda con web-push. 404/410 = borra la suscripción.
+- Varias vencidas de una persona en la misma hora van en un solo push ("Vencieron N tareas sin completar").
+- Claves en **Vault** de Supabase (nunca en el repositorio): `vapid_publica`, `vapid_privada`, `vapid_sujeto`, `notif_url`,
+  `notif_clave`. La VAPID pública también está en `web/src/lib/config.ts` (es pública por diseño).
+- Service worker: `web/public/sw.js` (solo push y abrir la tarea; no guarda caché).
 
 **iPhone**: el push solo funciona con la app agregada a la pantalla de inicio (iOS 16.4+) y abierta desde el ícono.
 Por eso el manifest usa `display: standalone` y el login (código de un solo uso) se hace dentro de la app instalada.
@@ -283,7 +302,7 @@ App Aromas Claude/
 │       ├── lib/              ← supabase, fechas, permisos, formato
 │       ├── pantallas/        ← una carpeta por pantalla
 │       ├── componentes/      ← piezas reutilizables
-│       └── sw.ts             ← service worker (push)
+│   └── public/sw.js          ← service worker (push)
 └── supabase/
     ├── migrations/           ← SQL versionado (estructura, permisos, funciones, cron)
     ├── seed.sql              ← datos de ejemplo SOLO para pruebas (sin mails reales)
@@ -296,7 +315,7 @@ App Aromas Claude/
 ## 11. Modelo de datos v2
 
 ```
-profiles            id (= auth.users.id), nombre, email, rol ('admin'|'integrante'), activo, carga_ventas, avatar_url, created_at
+profiles            id (= auth.users.id), nombre, email, rol ('admin'|'integrante'), activo, carga_ventas, push_alertas, avatar_url, created_at
 team_invites        email, nombre, rol, carga_ventas, invitado_por, areas jsonb [{area_id, rol_area}], created_at
 areas               id, nombre, descripcion, color, emoji, orden, activa
 area_members        area_id, profile_id, rol_area ('lider'|'miembro')
@@ -322,6 +341,7 @@ ventas              id, fecha, monto, canal ('conocidos'|'tienda_online'|'mayori
 
 push_subscriptions  id, profile_id, endpoint, p256dh, auth, user_agent, created_at
 app_notifications   id, destinatario_id, tipo, titulo, cuerpo, instance_id?, objective_id?, area_id?, leida, created_at
+privado.push_cola   id, destinatario_id, titulo, cuerpo, url, clave (única), urgente, created_at, enviado_at   -- no se expone por la API
 ```
 
 Cambios clave respecto de la v1: rol por área; `creado_por` en tareas y objetivos; fecha en tareas únicas;
@@ -361,9 +381,11 @@ Candela será líder de sus tres áreas (Cami también las gestiona como admin);
 - Cálculos: `cumplimiento(desde, hasta)`, `avance_objetivos(fecha)`, `evolucion_objetivo(id)`, `resumen_ventas(desde, hasta)`.
 - Personas (admin): `invitar_persona(email, nombre, rol, carga_ventas, areas)` (las áreas se aplican solas en el primer
   ingreso), `actualizar_persona`, `asignar_area` (rol null = sacar del área), `cancelar_invitacion`; cada una: `actualizar_mi_nombre`.
-- Escritura directa con RLS: áreas y planes (admin), objetivos (admin / líder del área), aportes manuales, comentarios, ventas, suscripciones push, marcar alertas leídas.
+- Avisos: `guardar_suscripcion(endpoint, p256dh, auth, user_agent)` (si el celular era de otra persona, pasa a la nueva),
+  `probar_aviso()`, `mis_avisos(push_alertas)`, `leer_alertas()`. Al cerrar sesión la app borra la suscripción de ese celular.
+- Escritura directa con RLS: áreas y planes (admin), objetivos (admin / líder del área), aportes manuales, comentarios, ventas, borrar la propia suscripción push, marcar alertas leídas.
 - Pruebas (se deshacen solas al terminar): `supabase/tests/permisos.sql` (24), `eliminar_tarea.sql` (8), `invitar_con_areas.sql` (8),
-  `resumen_ventas.sql` (mismas cifras que el Plan VEA).
+  `resumen_ventas.sql` (mismas cifras que el Plan VEA), `avisos.sql` (17).
 
 ---
 

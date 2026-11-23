@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { ir, volver } from '../lib/ruta'
+import { useSesion } from '../lib/sesion'
+import { useAlertas } from '../lib/alertas'
 
 export function Cargando({ texto = 'Cargando…' }: { texto?: string }) {
   return (
@@ -28,7 +30,21 @@ export function ErrorCarga({ mensaje, reintentar }: { mensaje: string; reintenta
   )
 }
 
-/** Barra de arriba: título (o botón atrás) y engranaje. */
+/** Campana de alertas (solo admin) con la cantidad sin leer. */
+function Campana() {
+  const { yo } = useSesion()
+  const { noLeidas } = useAlertas()
+  if (yo?.rol !== 'admin') return null
+  return (
+    <button className="boton-icono campana" onClick={() => ir('alertas')}
+      aria-label={noLeidas > 0 ? `Alertas: ${noLeidas} sin leer` : 'Alertas'}>
+      <span aria-hidden="true">🔔</span>
+      {noLeidas > 0 && <span className="badge" aria-hidden="true">{noLeidas > 99 ? '99+' : noLeidas}</span>}
+    </button>
+  )
+}
+
+/** Barra de arriba: título (o botón atrás), campana (admin) y engranaje. */
 export function Encabezado({ titulo, atras }: { titulo?: string; atras?: string }) {
   return (
     <header className="encabezado">
@@ -40,6 +56,7 @@ export function Encabezado({ titulo, atras }: { titulo?: string; atras?: string 
         <span className="marca">Ritual Diario</span>
       )}
       {titulo && <h1 className="encabezado-titulo">{titulo}</h1>}
+      <Campana />
       <button className="boton-icono" onClick={() => ir('config')} aria-label="Configuración">
         <span aria-hidden="true">⚙︎</span>
       </button>

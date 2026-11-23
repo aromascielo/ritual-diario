@@ -35,3 +35,14 @@ Claude los configuró desde el navegador de la app de Claude:
 
 No necesitás instalar nada. Cada cambio se publica en la dirección de prueba de Cloudflare.
 La app de Laura (Netlify) no se toca hasta la fase 6.
+
+## Avisos al celular (fase 5)
+
+1. Abrí la app en el celular (en Android, con Chrome; mejor si está instalada en la pantalla de inicio).
+2. Tocá el engranaje ⚙︎ → **Notificaciones** → **Activar avisos** → cuando el celular pregunte, tocá **Permitir**.
+3. Tocá **Probar aviso**: en unos segundos tiene que llegar "🌿 ¡Los avisos funcionan!".
+4. En iPhone (Candela): primero Safari → **Compartir** → **Agregar a inicio**, abrir la app desde el ícono y recién ahí activar.
+
+Las claves de los avisos están guardadas en Supabase → **Vault** (no en este repositorio). Si algún día hay que
+cambiarlas, se lo pedís a Claude: hay que cambiar a la vez `vapid_publica`/`vapid_privada` en Vault y la pública en
+`web/src/lib/config.ts`, y todas tienen que volver a tocar "Activar avisos".

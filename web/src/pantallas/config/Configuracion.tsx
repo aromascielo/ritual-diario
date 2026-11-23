@@ -74,6 +74,13 @@ export function Configuracion() {
 
         <ul className="lista-config">
           <li>
+            <button className="tarjeta fila-config" onClick={() => ir('config/notificaciones')}>
+              <span className="fila-config-emoji" aria-hidden="true">🔔</span>
+              <span className="fila-config-texto"><strong>Notificaciones</strong><span className="ayuda">Avisos al celular: activar y probar</span></span>
+              <span className="fila-flecha" aria-hidden="true">›</span>
+            </button>
+          </li>
+          <li>
             <button className="tarjeta fila-config" onClick={() => ir('config/tareas')}>
               <span className="fila-config-emoji" aria-hidden="true">📋</span>
               <span className="fila-config-texto"><strong>Tareas</strong><span className="ayuda">Todas las tareas: las que se repiten y las de una vez</span></span>
@@ -101,7 +108,7 @@ export function Configuracion() {
         </ul>
 
         <button className="boton boton-secundario boton-ancho" onClick={() => setConfirmarSalida(true)}>Cerrar sesión</button>
-        <p className="ayuda centrado version">Ritual Diario v2 · fase 3</p>
+        <p className="ayuda centrado version">Ritual Diario v2 · fase 5</p>
       </main>
       <Dialogo
         titulo="¿Cerrar sesión?"

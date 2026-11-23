@@ -9,7 +9,7 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 | 2. App: lo diario | Login con código, Hoy, detalle de tarea (hecha / omitir con motivo / comentarios), agregar tarea con fecha | Cami en el celular (URL de prueba) | ✅ 23 nov 2026 |
 | 3. Gestión | Tareas (crear, editar, archivar; recurrentes para líderes), Áreas y Personas desde Configuración | Cami + Laura | 🧪 Hecha el 23 nov 2026; falta que la prueben Cami y Laura |
 | 4. Objetivos y VEA | Objetivos de todos los tipos, aportes, Plan VEA, carga de ventas | Cami + Laura (ventas) | 🧪 Hecha el 23 nov 2026; falta probarla |
-| 5. Seguimiento y avisos | Áreas y Equipo con % al día, push (previo, vencida, resumen, comentarios), campana de alertas | Cami (Android); iPhone con Candela | ⬜ |
+| 5. Seguimiento y avisos | Áreas y Equipo con % al día, push (previo, vencida, resumen, comentarios), campana de alertas | Cami (Android); iPhone con Candela | 🧪 Hecha el 23 nov 2026; falta que Cami active los avisos y los pruebe en su Android |
 | 6. Publicación y cambio | Cloudflare con GitHub, limpiar datos de prueba, cargar equipo y tareas reales, pasar a Laura, apagar Netlify | Todo el equipo | ⬜ |
 | 7. Sumar a Candela | Alta como líder de Redes, Campañas y Publicidad, tareas, prueba en iPhone | Candela | ⬜ (ene 2027) |
 
@@ -25,14 +25,22 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - [ ] Fase 4: probar Objetivos (crear uno, cargar avance, marcar cumplido), Plan VEA y Ventas (cargar ventas reales de noviembre).
 - [ ] Fase 3: invitar a Laura desde Configuración → Personas (con sus 5 áreas como líder y "carga ventas") y pedirle que pruebe.
   Laura sigue usando la app vieja hasta la fase 6.
+- [ ] Fase 5: mirar Áreas y Equipo; en el celular, Configuración → Notificaciones → "Activar avisos" → "Probar aviso".
+  Comentar una tarea de otra persona (o pedirle a Laura que comente una tuya) y ver que llegue el aviso.
+- [ ] Aprobar en Supabase la migración `pg_net_en_extensions` (saca un aviso de seguridad; quedó sin aplicar porque la
+  pregunta de Supabase venció).
 
 ## Estado de la base de datos (proyecto `ritual-diario`, `oehrvzijfktxcoyfommj`)
-- 6 migraciones aplicadas (`supabase/migrations/`). Cargadas: 8 áreas y el Plan VEA con sus 4 metas.
+- 10 migraciones aplicadas (`supabase/migrations/`; la 11.ª, `pg_net_en_extensions`, está escrita pero pendiente de aprobar).
+  Cargadas: 8 áreas y el Plan VEA con sus 4 metas.
 - Personas: Cami (admin, "carga ventas", líder en las 8 áreas desde el 23 nov).
 - 8 migraciones (las últimas: `20261123120000_eliminar_tarea.sql`, `20261123130000_areas_en_invitacion.sql`).
   y `20261123140000_resumen_ventas.sql` (9 migraciones). Pruebas: permisos 24/24, eliminar_tarea 8/8,
   invitar_con_areas 8/8, resumen_ventas (coincide con el Plan VEA).
-- Cron activo: `generar-instancias` (00:05 hora Argentina). El cron de notificaciones se agrega en la fase 5.
+- Cron activos: `generar-instancias` (00:05 hora Argentina) y `avisos` (cada hora en punto).
+- Edge Function `notificaciones` publicada (versión 1). Claves en Vault: `vapid_publica`, `vapid_privada`, `vapid_sujeto`,
+  `notif_url`, `notif_clave`. Probada: la base llama a la función y responde bien (todavía sin celulares suscriptos).
+- Pruebas de avisos: `supabase/tests/avisos.sql` → 17/17 OK.
 - Pruebas: `supabase/tests/permisos.sql` → 24/24 OK. Cálculo VEA verificado con ventas de ejemplo.
 
 ## Registro
@@ -59,3 +67,7 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
   archivados, detalle con evolución y cargas a mano, crear/editar, cumplido/archivar), Plan VEA con evolución desde la base,
   Ventas (mes a mes, totales de la base, cargar/editar/borrar), tareas vinculadas a objetivos con peso. Migración
   `resumen_ventas`. Probado en navegador con datos simulados y contra la base.
+- 23 nov 2026 — Fase 5 programada: pantallas Áreas y Equipo (con detalle por área y por persona, pestañas Hoy / Semana / Mes),
+  campana de alertas en vivo para la admin, Configuración → Notificaciones (activar, probar, alertas al celular), service
+  worker `public/sw.js`, migración `avisos` (cola, cron cada hora, comentarios, silencio de 22 a 8) y función `notificaciones`.
+  Pruebas 17/17. Advisors: sin avisos nuevos salvo pg_net en public (se arregla con `pg_net_en_extensions`).

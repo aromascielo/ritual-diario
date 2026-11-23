@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { Session } from '@supabase/supabase-js'
 import { supabase, mensajeDeError } from './supabase'
 import { traerEquipo } from './datos'
+import { desactivarPush } from './push'
 import type { Area, Miembro, Perfil } from './tipos'
 
 interface Sesion {
@@ -68,6 +69,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
   }, [uid, recargarEquipo])
 
   const salir = useCallback(async () => {
+    await desactivarPush() // este celular deja de recibir avisos de esta cuenta (CLAUDE.md §7)
     await supabase.auth.signOut()
     window.location.hash = '#/hoy'
   }, [])

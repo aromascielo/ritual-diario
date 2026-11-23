@@ -7,3 +7,7 @@ export const SUPABASE_URL: string =
   import.meta.env.VITE_SUPABASE_URL ?? 'https://oehrvzijfktxcoyfommj.supabase.co'
 export const SUPABASE_KEY: string =
   import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_QC0jrN5Sr6HQLsHEcVxwMw_9S3HpRxc'
+
+// Clave pública VAPID para el push (pública por diseño; la privada está en Vault de Supabase).
+export const VAPID_PUBLICA: string =
+  import.meta.env.VITE_VAPID_PUBLICA ?? 'BPpF3mrfADSOrGZ6nTVO4ghOE8OQFVileZuMoWLUlWLN8rKPsvfQ06Lp3VQzCwCq6MUG9hiRuH0uAzzIrusof2g'
