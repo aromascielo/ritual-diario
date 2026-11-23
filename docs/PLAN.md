@@ -10,7 +10,7 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 | 3. Gestión | Tareas (crear, editar, archivar; recurrentes para líderes), Áreas y Personas desde Configuración | Cami + Laura | 🧪 Cami la probó el 23 nov 2026 (todo OK tras el arreglo de los diálogos); falta Laura |
 | 4. Objetivos y VEA | Objetivos de todos los tipos, aportes, Plan VEA, carga de ventas | Cami + Laura (ventas) | 🧪 Hecha el 23 nov 2026; falta probarla |
 | 5. Seguimiento y avisos | Áreas y Equipo con % al día, push (previo, vencida, resumen, comentarios), campana de alertas | Cami (Android); iPhone con Candela | 🧪 Hecha el 23 nov 2026; push probado en el Android de Cami (23 nov). Falta: aviso de comentario entre dos personas (con Laura) y revisar Áreas/Equipo con datos reales |
-| 6. Publicación y cambio | Cloudflare con GitHub, limpiar datos de prueba, cargar equipo y tareas reales, pasar a Laura, apagar Netlify | Todo el equipo | ⬜ |
+| 6. Publicación y cambio | Cloudflare con GitHub, limpiar datos de prueba, cargar equipo y tareas reales, pasar a Laura, apagar Netlify | Todo el equipo | 🟡 Empezada el 23 nov 2026: Cloudflare listo, datos de prueba limpiados. Falta: Laura entra el jueves 26, cargar tareas, elegir día del cambio, apagar Netlify (con OK de Cami) |
 | 7. Sumar a Candela | Alta como líder de Redes, Campañas y Publicidad, tareas, prueba en iPhone | Candela | ⬜ (ene 2027) |
 
 ## Pendientes de Cami
@@ -29,6 +29,14 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - [x] Fase 5: avisos activados en el Android de Cami; "Probar aviso" llegó (23 nov).
 - [ ] Fase 5: mirar Áreas, Equipo y la campana. El jueves, con Laura: que active los avisos y que comente una tarea tuya.
 - [x] Aprobar la migración `pg_net_en_extensions` (aprobada el 23 nov).
+
+### Fase 6 — decisiones del 23 nov 2026
+- No se pasa nada de la app vieja: las tareas y objetivos se cargan de nuevo en la v2 (Cami lo eligió; se miró la base vieja
+  solo para leer, sin cambios).
+- Datos de prueba borrados: el objetivo "Vender $90mil en la feria" y la tarea eliminada "Ver la app". Quedan, porque son
+  reales: las 3 ventas del 15/11 y las tareas "Mandar mensajes mayoristas", "Canva" y "Revisar números".
+- Día del cambio (Laura deja la app vieja): se decide después de que Laura la pruebe.
+- Apagar Netlify o poner un aviso en la app vieja: solo con el OK explícito de Cami, cuando Laura ya use la nueva.
 
 ## Estado de la base de datos (proyecto `ritual-diario`, `oehrvzijfktxcoyfommj`)
 - 11 migraciones aplicadas (`supabase/migrations/`, la última `pg_net_en_extensions`).
