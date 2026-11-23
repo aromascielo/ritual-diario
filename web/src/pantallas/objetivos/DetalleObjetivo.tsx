@@ -15,7 +15,7 @@ import type { Aporte, Avance, Objetivo } from '../../lib/tipos'
 
 export function DetalleObjetivo({ id }: { id: string }) {
   const { yo, areas, perfiles } = useSesion()
-  const { puedeEditarObjetivo, puedeCargarAporte } = usePermisos()
+  const { puedeEditarObjetivo, puedeCargarAporte, cargaVentas } = usePermisos()
   const avisar = useAvisar()
   const [o, setO] = useState<Objetivo | null | undefined>(undefined)
   const [avance, setAvance] = useState<Avance | undefined>()
@@ -120,6 +120,18 @@ export function DetalleObjetivo({ id }: { id: string }) {
             {o.creado_por && <div><dt>Lo creó</dt><dd>{nombre.get(o.creado_por) ?? '—'}</dd></div>}
           </dl>
           <p className="ayuda">{AYUDA_MEDICION[o.tipo_medicion]}</p>
+          {['ventas', 'proporcion_ventas', 'clientes_mayoristas'].includes(o.tipo_medicion) && (
+            <div className="aviso-ventas">
+              <p className="ayuda">
+                Las ventas no se cargan acá: se cargan una por una en la pantalla <strong>Ventas</strong> y este objetivo
+                las suma solo. Cuenta todas las ventas{o.canal_ventas ? ` de ${NOMBRES_CANAL[o.canal_ventas].toLowerCase()}` : ''} del
+                {' '}{diaMes(o.fecha_inicio)} al {diaMes(o.fecha_fin)}.
+              </p>
+              {cargaVentas && o.estado === 'activo' && (
+                <button className="boton boton-secundario" onClick={() => ir('ventas')}>💲 Ir a cargar una venta</button>
+              )}
+            </div>
+          )}
 
           {editable && (
             <div className="acciones-secundarias">

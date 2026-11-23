@@ -21,7 +21,8 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - [x] Fase 2: Gmail conectado en Supabase (SMTP) y plantillas con el código (lo hizo Claude desde el navegador, 18 nov).
 - [x] Fase 2: Cloudflare conectado con GitHub; app publicada en https://ritual-diario.aromascielo.workers.dev (18 nov).
 - [x] Fase 2: probar en el celular (Cami entró con el código el 23 nov).
-- [ ] Fase 3: probar tareas que se repiten, editar, Configuración → Tareas / Áreas / Personas.
+- [x] Fase 3: tareas que se repiten, editar (sin duplicar) y Configuración → Tareas: probado por Cami el 23 nov.
+- [ ] Fase 3: volver a probar Configuración → Áreas (descripción) y Personas (invitar) después del arreglo del 23 nov.
 - [ ] Fase 4: probar Objetivos (crear uno, cargar avance, marcar cumplido), Plan VEA y Ventas (cargar ventas reales de noviembre).
 - [ ] Fase 3: invitar a Laura desde Configuración → Personas (con sus 5 áreas como líder y "carga ventas") y pedirle que pruebe.
   Laura sigue usando la app vieja hasta la fase 6.
@@ -71,3 +72,6 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
   worker `public/sw.js`, migración `avisos` (cola, cron cada hora, comentarios, silencio de 22 a 8) y función `notificaciones`.
   Pruebas 17/17. Migración `pg_net_en_extensions` aplicada: advisors sin avisos nuevos (quedan los esperados: funciones
   RPC security definer que validan permisos adentro, y "leaked password" que no aplica porque se entra con código).
+- 23 nov 2026 — Arreglo: en los diálogos (áreas, ventas, invitar persona…) cada letra escrita devolvía el cursor al primer
+  campo. Causa: el diálogo ponía el foco cada vez que se redibujaba. Ahora solo al abrir. En el detalle de un objetivo
+  de ventas se aclara que las ventas se cargan en la pantalla Ventas, con botón para ir.

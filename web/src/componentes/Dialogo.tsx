@@ -9,15 +9,19 @@ export function Dialogo({ titulo, abierto, alCerrar, children, acciones }: {
   acciones: ReactNode
 }) {
   const caja = useRef<HTMLDivElement>(null)
+  // alCerrar cambia en cada render de quien abre el diálogo: se guarda en una ref para que el foco
+  // vaya al primer campo SOLO al abrir (antes se volvía al primer campo con cada letra que se escribía).
+  const cerrar = useRef(alCerrar)
+  cerrar.current = alCerrar
 
   useEffect(() => {
     if (!abierto) return
-    const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') alCerrar() }
+    const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') cerrar.current() }
     window.addEventListener('keydown', tecla)
     const primero = caja.current?.querySelector<HTMLElement>('textarea, input, select, button')
     primero?.focus()
     return () => window.removeEventListener('keydown', tecla)
-  }, [abierto, alCerrar])
+  }, [abierto])
 
   if (!abierto) return null
   return (

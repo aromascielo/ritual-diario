@@ -514,3 +514,4 @@ button.objetivo { width: 100%; text-align: left; border: none; cursor: pointer; 
 .punto-nueva { width: 10px; height: 10px; border-radius: 50%; background: var(--naranja); flex: none; }
 .pasos { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
 .lista-simple { display: flex; flex-direction: column; gap: 6px; }
+.aviso-ventas { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: var(--fondo); }
