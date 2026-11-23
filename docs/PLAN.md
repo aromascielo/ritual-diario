@@ -27,11 +27,10 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
   Laura sigue usando la app vieja hasta la fase 6.
 - [ ] Fase 5: mirar Áreas y Equipo; en el celular, Configuración → Notificaciones → "Activar avisos" → "Probar aviso".
   Comentar una tarea de otra persona (o pedirle a Laura que comente una tuya) y ver que llegue el aviso.
-- [ ] Aprobar en Supabase la migración `pg_net_en_extensions` (saca un aviso de seguridad; quedó sin aplicar porque la
-  pregunta de Supabase venció).
+- [x] Aprobar la migración `pg_net_en_extensions` (aprobada el 23 nov).
 
 ## Estado de la base de datos (proyecto `ritual-diario`, `oehrvzijfktxcoyfommj`)
-- 10 migraciones aplicadas (`supabase/migrations/`; la 11.ª, `pg_net_en_extensions`, está escrita pero pendiente de aprobar).
+- 11 migraciones aplicadas (`supabase/migrations/`, la última `pg_net_en_extensions`).
   Cargadas: 8 áreas y el Plan VEA con sus 4 metas.
 - Personas: Cami (admin, "carga ventas", líder en las 8 áreas desde el 23 nov).
 - 8 migraciones (las últimas: `20261123120000_eliminar_tarea.sql`, `20261123130000_areas_en_invitacion.sql`).
@@ -70,4 +69,5 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - 23 nov 2026 — Fase 5 programada: pantallas Áreas y Equipo (con detalle por área y por persona, pestañas Hoy / Semana / Mes),
   campana de alertas en vivo para la admin, Configuración → Notificaciones (activar, probar, alertas al celular), service
   worker `public/sw.js`, migración `avisos` (cola, cron cada hora, comentarios, silencio de 22 a 8) y función `notificaciones`.
-  Pruebas 17/17. Advisors: sin avisos nuevos salvo pg_net en public (se arregla con `pg_net_en_extensions`).
+  Pruebas 17/17. Migración `pg_net_en_extensions` aplicada: advisors sin avisos nuevos (quedan los esperados: funciones
+  RPC security definer que validan permisos adentro, y "leaked password" que no aplica porque se entra con código).
