@@ -13,6 +13,10 @@ import { ConfigTareas } from './pantallas/config/ConfigTareas'
 import { ConfigAreas } from './pantallas/config/ConfigAreas'
 import { ConfigPersonas } from './pantallas/config/ConfigPersonas'
 import { Persona } from './pantallas/config/Persona'
+import { DetalleObjetivo } from './pantallas/objetivos/DetalleObjetivo'
+import { FormObjetivo } from './pantallas/objetivos/FormObjetivo'
+import { PlanVea } from './pantallas/vea/PlanVea'
+import { Ventas } from './pantallas/ventas/Ventas'
 
 export function App() {
   const { cargando, error, session, yo, salir, recargarEquipo } = useSesion()
@@ -44,6 +48,18 @@ export function App() {
     case 'objetivos':
       pantalla = <Objetivos />
       break
+    case 'objetivo':
+      pantalla = ruta.id ? <DetalleObjetivo key={ruta.id} id={ruta.id} /> : <Objetivos />
+      break
+    case 'objetivo-form':
+      pantalla = <FormObjetivo key={ruta.id ?? 'nuevo'} id={ruta.id ?? 'nuevo'} />
+      break
+    case 'vea':
+      pantalla = <PlanVea />
+      break
+    case 'ventas':
+      pantalla = <Ventas />
+      break
     case 'areas':
       pantalla = <Pronto titulo="Áreas" texto="Acá vas a ver cada área con su % al día de la semana. Llega en la fase 5." />
       break
@@ -66,7 +82,8 @@ export function App() {
       pantalla = <Hoy />
   }
 
-  const pestana = ['hoy', 'objetivos', 'areas', 'equipo'].includes(ruta.pantalla) ? ruta.pantalla : ['tarea', 'agregar', 'editar'].includes(ruta.pantalla) ? 'hoy' : ''
+  const pestana = ['hoy', 'objetivos', 'areas', 'equipo'].includes(ruta.pantalla) ? ruta.pantalla : ['tarea', 'agregar', 'editar'].includes(ruta.pantalla) ? 'hoy'
+    : ['objetivo', 'objetivo-form', 'vea', 'ventas'].includes(ruta.pantalla) ? 'objetivos' : ''
   return (
     <div className="app">
       {pantalla}

@@ -437,3 +437,36 @@ li.fila-config { cursor: default; }
 .chip-rol.rol-lider { background: var(--oliva); border-color: var(--oliva); color: #fff; font-weight: 700; }
 .direccion-app { font-weight: 700; overflow-wrap: anywhere; padding: 10px 12px; border-radius: 12px; background: var(--fondo); user-select: all; }
 .aviso-baja { border-left: 4px solid var(--naranja); }
+
+/* Objetivos, Plan VEA y Ventas ------------------------------------------------ */
+button.objetivo { width: 100%; text-align: left; border: none; cursor: pointer; }
+.objetivo-pie { font-size: 0.82rem; color: var(--texto-suave); }
+.etiqueta-estado { flex: none; padding: 2px 10px; border-radius: 10px; font-size: 0.78rem; font-weight: 700; border: 1.5px solid var(--borde); white-space: nowrap; }
+.etiqueta-estado.atrasado { background: var(--naranja); border-color: var(--naranja); color: #fff; }
+.etiqueta-estado.ok { background: var(--oliva); border-color: var(--oliva); color: #fff; }
+.etiqueta-estado.encamino { border-color: var(--oliva); }
+.etiqueta-estado.gris { color: var(--texto-suave); }
+.detalle > .etiqueta-estado { align-self: flex-start; }
+.plan-resumen { width: 100%; text-align: left; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 12px; border-left: 5px solid var(--oliva); }
+.plan-titulo { font-size: 1.4rem; }
+.plan-metas { display: flex; flex-direction: column; gap: 10px; }
+.plan-metas li { display: flex; flex-direction: column; gap: 4px; }
+.plan-meta-titulo { font-size: 0.92rem; font-weight: 500; }
+.enlace-falso { font-weight: 600; font-size: 0.9rem; text-decoration: underline; text-underline-offset: 3px; }
+.avance-grande { display: flex; flex-direction: column; }
+.meta-vea { display: flex; flex-direction: column; gap: 10px; }
+.evolucion { display: flex; flex-direction: column; gap: 6px; }
+.evolucion li { display: grid; grid-template-columns: 74px 1fr auto; gap: 8px; align-items: center; font-size: 0.85rem; }
+.evol-mes { color: var(--texto-suave); }
+.evol-barra { height: 10px; border-radius: 5px; background: var(--borde); overflow: hidden; }
+.evol-barra > span { display: block; height: 100%; background: var(--oliva); border-radius: 5px; }
+.evol-base .evol-barra > span { background: var(--topo); opacity: 0.6; }
+.evol-valor { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; min-width: 70px; }
+.selector-mes { display: flex; align-items: center; justify-content: space-between; }
+.selector-mes h1 { font-size: 1.6rem; }
+.selector-mes h1::first-letter { text-transform: uppercase; }
+.boton-icono:disabled { opacity: 0.3; }
+.resumen-ventas { display: flex; flex-direction: column; gap: 12px; }
+.canales { display: flex; flex-direction: column; gap: 6px; }
+.canales li { display: flex; justify-content: space-between; gap: 8px; }
+.input-monto { font-size: 1.5rem; font-weight: 600; }

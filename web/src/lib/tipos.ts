@@ -112,3 +112,66 @@ export interface Invitacion {
   areas: AreaInvitada[]
   created_at: string
 }
+
+export type TipoMedicion = 'tareas' | 'numerico' | 'ventas' | 'proporcion_ventas' | 'clientes_mayoristas' | 'cumplimiento'
+export type Canal = 'conocidos' | 'tienda_online' | 'mayorista'
+
+export interface Objetivo {
+  id: string
+  plan_id: string | null
+  area_id: string | null
+  titulo: string
+  descripcion: string | null
+  periodo: string
+  fecha_inicio: string
+  fecha_fin: string
+  tipo_medicion: TipoMedicion
+  evaluacion: 'periodo' | 'mensual'
+  meta_numerica: number | null
+  unidad: string | null
+  canal_ventas: Canal | null
+  valor_base: number | null
+  estado: 'activo' | 'cumplido' | 'archivado'
+  creado_por: string | null
+}
+
+export interface Plan {
+  id: string
+  titulo: string
+  descripcion: string | null
+  area_id: string | null
+  fecha_inicio: string
+  fecha_fin: string
+  activo: boolean
+}
+
+export interface Aporte {
+  id: string
+  objective_id: string
+  instance_id: string | null
+  cantidad: number
+  nota: string | null
+  cargado_por: string | null
+  created_at: string
+}
+
+export interface Venta {
+  id: string
+  fecha: string
+  monto: number
+  canal: Canal
+  cliente: string | null
+  nota: string | null
+  cargado_por: string | null
+  created_at: string
+}
+
+export interface ResumenVentas {
+  total: number
+  conocidos: number
+  tienda_online: number
+  mayorista: number
+  cantidad: number
+  proporcion_tienda: number | null
+  clientes_mayoristas: number
+}

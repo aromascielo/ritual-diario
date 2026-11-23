@@ -109,6 +109,14 @@ export function usePermisos() {
       esLider,
       esMiembro,
       puedeMarcar: (responsable: string) => esAdmin || responsable === yo?.id,
+      /** Igual que las políticas de objectives: admin todos; líder los de su área que no son de un plan. */
+      puedeEditarObjetivo: (o: { area_id: string | null; plan_id: string | null }) =>
+        esAdmin || (!!o.area_id && !o.plan_id && esLider(o.area_id)),
+      puedeCrearObjetivo: esAdmin || misAreas.some((m) => m.rol_area === 'lider'),
+      /** Aportes a mano en objetivos numéricos: admin o líder del área. */
+      puedeCargarAporte: (o: { area_id: string | null; tipo_medicion: string }) =>
+        o.tipo_medicion === 'numerico' && (esAdmin || (!!o.area_id && esLider(o.area_id))),
+      cargaVentas: esAdmin || !!yo?.carga_ventas,
       /** Igual que privado.puede_editar_tarea en la base (CLAUDE.md §2: editar / eliminar). */
       puedeEditarTarea: (t: { creado_por: string | null; responsable_id: string; frecuencia: string; areas: string[] }) => {
         if (esAdmin) return true

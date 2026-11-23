@@ -4,7 +4,7 @@ import { supabase } from './supabase'
 import { sumarDias, hoyISO } from './fechas'
 import type {
   Area, AreaInvitada, Avance, Comentario, Cumplimiento, Estado, Frecuencia, Instancia, Invitacion, Miembro, ObjetivoBreve, Perfil,
-  Plantilla, Rol, RolArea,
+  Plantilla, Rol, RolArea, Objetivo, Plan, Aporte, Venta, ResumenVentas, Canal, TipoMedicion,
 } from './tipos'
 
 const CAMPOS_INSTANCIA =
@@ -247,4 +247,102 @@ export async function actualizarPersona(id: string, nombre: string, rol: Rol, ac
 /** rol null = sacar a la persona del área. */
 export async function asignarArea(persona: string, area: string, rol: RolArea | null): Promise<void> {
   ok(await supabase.rpc('asignar_area', { p_persona: persona, p_area: area, p_rol_area: rol }))
+}
+
+// Objetivos ----------------------------------------------------------------------
+const CAMPOS_OBJETIVO =
+  'id,plan_id,area_id,titulo,descripcion,periodo,fecha_inicio,fecha_fin,tipo_medicion,evaluacion,meta_numerica,unidad,' +
+  'canal_ventas,valor_base,estado,creado_por'
+
+export async function traerObjetivosTodos(): Promise<Objetivo[]> {
+  return (ok(await supabase.from('objectives').select(CAMPOS_OBJETIVO).order('fecha_fin')) as unknown as Objetivo[]) ?? []
+}
+
+export async function traerObjetivo(id: string): Promise<Objetivo | null> {
+  return ok(await supabase.from('objectives').select(CAMPOS_OBJETIVO).eq('id', id).maybeSingle()) as unknown as Objetivo | null
+}
+
+export async function traerPlanes(): Promise<Plan[]> {
+  return ok(await supabase.from('planes').select('id,titulo,descripcion,area_id,fecha_inicio,fecha_fin,activo').order('fecha_fin')) ?? []
+}
+
+export interface DatosObjetivo {
+  area_id: string | null
+  titulo: string
+  descripcion: string
+  periodo: string
+  fecha_inicio: string
+  fecha_fin: string
+  tipo_medicion: TipoMedicion
+  evaluacion: 'periodo' | 'mensual'
+  meta_numerica: number | null
+  unidad: string | null
+  canal_ventas: Canal | null
+  valor_base: number | null
+}
+
+/** Crea o edita un objetivo (la base valida: admin todos; líder solo los de su área, no generales ni de planes). */
+export async function guardarObjetivo(id: string | null, d: DatosObjetivo, creadoPor: string): Promise<string> {
+  const fila = { ...d, titulo: d.titulo.trim(), descripcion: d.descripcion.trim() || null, unidad: d.unidad?.trim() || null }
+  if (id) {
+    ok(await supabase.from('objectives').update(fila).eq('id', id))
+    return id
+  }
+  const r = ok(await supabase.from('objectives').insert({ ...fila, creado_por: creadoPor }).select('id').single()) as { id: string }
+  return r.id
+}
+
+export async function cambiarEstadoObjetivo(id: string, estado: Objetivo['estado']): Promise<void> {
+  ok(await supabase.from('objectives').update({ estado }).eq('id', id))
+}
+
+export async function evolucionObjetivo(id: string): Promise<{ mes: string; valor: number | null }[]> {
+  return ok(await supabase.rpc('evolucion_objetivo', { p_id: id })) ?? []
+}
+
+export async function traerAportes(objetivo: string): Promise<Aporte[]> {
+  return ok(await supabase.from('objective_aportes')
+    .select('id,objective_id,instance_id,cantidad,nota,cargado_por,created_at')
+    .eq('objective_id', objetivo).order('created_at', { ascending: false }).limit(200)) ?? []
+}
+
+export async function cargarAporte(objetivo: string, cantidad: number, nota: string, quien: string): Promise<void> {
+  ok(await supabase.from('objective_aportes').insert({ objective_id: objetivo, cantidad, nota: nota.trim() || null, cargado_por: quien }))
+}
+
+export async function borrarAporte(id: string): Promise<void> {
+  ok(await supabase.from('objective_aportes').delete().eq('id', id))
+}
+
+// Ventas -------------------------------------------------------------------------
+export async function traerVentas(desde: string, hasta: string): Promise<Venta[]> {
+  return ok(await supabase.from('ventas')
+    .select('id,fecha,monto,canal,cliente,nota,cargado_por,created_at')
+    .gte('fecha', desde).lte('fecha', hasta)
+    .order('fecha', { ascending: false }).order('created_at', { ascending: false })) ?? []
+}
+
+export async function resumenVentas(desde: string, hasta: string): Promise<ResumenVentas> {
+  const filas = ok(await supabase.rpc('resumen_ventas', { p_desde: desde, p_hasta: hasta })) as ResumenVentas[] | null
+  return filas?.[0] ?? { total: 0, conocidos: 0, tienda_online: 0, mayorista: 0, cantidad: 0, proporcion_tienda: null, clientes_mayoristas: 0 }
+}
+
+/** Nombres de clientes mayoristas ya cargados (para sugerir y no escribirlos distinto). */
+export async function clientesMayoristas(): Promise<string[]> {
+  const filas = ok(await supabase.from('ventas').select('cliente').eq('canal', 'mayorista').order('created_at', { ascending: false }).limit(300)) as { cliente: string | null }[]
+  const vistos = new Map<string, string>()
+  for (const f of filas ?? []) if (f.cliente) { const k = f.cliente.trim().toLowerCase(); if (!vistos.has(k)) vistos.set(k, f.cliente.trim()) }
+  return [...vistos.values()].sort((a, b) => a.localeCompare(b, 'es'))
+}
+
+export interface DatosVenta { fecha: string; monto: number; canal: Canal; cliente: string; nota: string }
+
+export async function guardarVenta(id: string | null, v: DatosVenta, quien: string): Promise<void> {
+  const fila = { fecha: v.fecha, monto: v.monto, canal: v.canal, cliente: v.cliente.trim() || null, nota: v.nota.trim() || null }
+  if (id) ok(await supabase.from('ventas').update(fila).eq('id', id))
+  else ok(await supabase.from('ventas').insert({ ...fila, cargado_por: quien }))
+}
+
+export async function borrarVenta(id: string): Promise<void> {
+  ok(await supabase.from('ventas').delete().eq('id', id))
 }
