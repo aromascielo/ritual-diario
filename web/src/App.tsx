@@ -7,7 +7,8 @@ import { DetalleTarea } from './pantallas/tarea/DetalleTarea'
 import { AgregarTarea } from './pantallas/agregar/AgregarTarea'
 import { Objetivos } from './pantallas/objetivos/Objetivos'
 import { Configuracion } from './pantallas/config/Configuracion'
-import { Pronto } from './pantallas/pronto/Pronto'
+import { Areas, DetalleArea } from './pantallas/areas/Areas'
+import { Equipo, DetalleMiembro } from './pantallas/equipo/Equipo'
 import { EditarTarea } from './pantallas/editar/EditarTarea'
 import { ConfigTareas } from './pantallas/config/ConfigTareas'
 import { ConfigAreas } from './pantallas/config/ConfigAreas'
@@ -61,10 +62,16 @@ export function App() {
       pantalla = <Ventas />
       break
     case 'areas':
-      pantalla = <Pronto titulo="Áreas" texto="Acá vas a ver cada área con su % al día de la semana. Llega en la fase 5." />
+      pantalla = <Areas />
+      break
+    case 'area':
+      pantalla = ruta.id ? <DetalleArea key={ruta.id} id={ruta.id} /> : <Areas />
       break
     case 'equipo':
-      pantalla = <Pronto titulo="Equipo" texto="Acá vas a ver a cada persona con sus pendientes y su % al día. Llega en la fase 5." />
+      pantalla = <Equipo />
+      break
+    case 'miembro':
+      pantalla = ruta.id ? <DetalleMiembro key={ruta.id} id={ruta.id} /> : <Equipo />
       break
     case 'editar':
       pantalla = ruta.id ? <EditarTarea key={ruta.id} id={ruta.id} /> : <Hoy />
@@ -83,7 +90,8 @@ export function App() {
   }
 
   const pestana = ['hoy', 'objetivos', 'areas', 'equipo'].includes(ruta.pantalla) ? ruta.pantalla : ['tarea', 'agregar', 'editar'].includes(ruta.pantalla) ? 'hoy'
-    : ['objetivo', 'objetivo-form', 'vea', 'ventas'].includes(ruta.pantalla) ? 'objetivos' : ''
+    : ['objetivo', 'objetivo-form', 'vea', 'ventas'].includes(ruta.pantalla) ? 'objetivos'
+    : ruta.pantalla === 'area' ? 'areas' : ruta.pantalla === 'miembro' ? 'equipo' : ''
   return (
     <div className="app">
       {pantalla}

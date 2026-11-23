@@ -61,6 +61,24 @@ export async function tareasVencidas(persona: string | null): Promise<Instancia[
   return (ok(await q) as unknown as FilaInstancia[] ?? []).map(aInstancia)
 }
 
+/** Tareas de un período, de un área o de una persona (pantallas Áreas y Equipo).
+ *  Incluye lo hecho de tareas eliminadas, porque también cuenta en el % al día. */
+export async function tareasDelPeriodo(desde: string, hasta: string, filtro: { area?: string; persona?: string }): Promise<Instancia[]> {
+  const extra = filtro.area ? ',filtro:task_instance_areas!inner(area_id)' : ''
+  let q = supabase
+    .from('task_instances')
+    .select(CAMPOS_INSTANCIA + extra)
+    .gte('fecha', desde)
+    .lte('fecha', hasta)
+    .order('fecha')
+    .order('fecha_limite')
+    .limit(1000)
+  if (filtro.area) q = q.eq('filtro.area_id', filtro.area)
+  if (filtro.persona) q = q.eq('responsable_id', filtro.persona)
+  const filas = ok(await q) as unknown as (FilaInstancia & { filtro?: unknown })[]
+  return (filas ?? []).map(({ filtro: _f, ...f }) => { void _f; return aInstancia(f) })
+}
+
 export interface DetalleTarea {
   instancia: Instancia
   descripcion: string | null

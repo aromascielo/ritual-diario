@@ -80,3 +80,12 @@ export function saludo(): string {
   if (h >= 13 && h < 20) return 'Buenas tardes'
   return 'Buenas noches'
 }
+
+export function inicioMes(iso: string): string {
+  return iso.slice(0, 8) + '01'
+}
+
+export function finMes(iso: string): string {
+  const [a, m] = iso.split('-').map(Number)
+  return new Date(Date.UTC(a, m, 0)).toISOString().slice(0, 10) // seguro: armada en UTC
+}
