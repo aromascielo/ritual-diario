@@ -20,12 +20,13 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - [x] Pegar el texto de `docs/instrucciones-proyecto.md` en las instrucciones del Proyecto de claude.ai.
 - [x] Fase 2: Gmail conectado en Supabase (SMTP) y plantillas con el código (lo hizo Claude desde el navegador, 18 nov).
 - [x] Fase 2: Cloudflare conectado con GitHub; app publicada en https://ritual-diario.aromascielo.workers.dev (18 nov).
-- [ ] Fase 2: probar en el celular y contarle a Claude qué anduvo y qué cambiar (README.md, paso 3).
+- [x] Fase 2: probar en el celular (Cami entró con el código el 23 nov).
+- [ ] Probar "Eliminar tarea" y seguir contando qué cambiar.
 
 ## Estado de la base de datos (proyecto `ritual-diario`, `oehrvzijfktxcoyfommj`)
 - 6 migraciones aplicadas (`supabase/migrations/`). Cargadas: 8 áreas y el Plan VEA con sus 4 metas.
-- Personas: Cami invitada como admin (con "carga ventas"); su perfil se crea en el primer ingreso.
-  Después del primer ingreso, sumarla a sus áreas (como admin ya puede crear tareas en todas).
+- Personas: Cami (admin, "carga ventas", líder en las 8 áreas desde el 23 nov).
+- 7 migraciones (la 7.ª: `20261123120000_eliminar_tarea.sql`). Pruebas: permisos 24/24, eliminar_tarea 8/8.
 - Cron activo: `generar-instancias` (00:05 hora Argentina). El cron de notificaciones se agrega en la fase 5.
 - Pruebas: `supabase/tests/permisos.sql` → 24/24 OK. Cálculo VEA verificado con ventas de ejemplo.
 
@@ -40,3 +41,7 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
   (se deshace sola): 8/8 OK. Decisión: login con `shouldCreateUser: true` (ver CLAUDE.md §8).
 - 18 nov 2026 — Claude configuró desde el navegador: SMTP de Gmail y plantillas "Confirm sign up" y "Magic link or OTP"
   con `{{ .Token }}` en Supabase; Worker `ritual-diario` en Cloudflare conectado a GitHub (solo este repositorio).
+- 23 nov 2026 — Supabase había pausado el proyecto por falta de uso (la app decía "Sin conexión"): reactivado,
+  datos intactos. Cami entró por primera vez y quedó como líder en las 8 áreas.
+- 23 nov 2026 — Eliminar tarea: migración `eliminar_tarea` (borra también los días vencidos sin hacer y avisa a la admin),
+  botón "Eliminar tarea" en el detalle con confirmación, Hoy ya no muestra tareas eliminadas. Pruebas 8/8 y 24/24.

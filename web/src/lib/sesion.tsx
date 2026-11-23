@@ -102,11 +102,22 @@ export function usePermisos() {
     const misAreas = miembros.filter((m) => m.profile_id === yo?.id)
     const esLider = (area: string) => misAreas.some((m) => m.area_id === area && m.rol_area === 'lider')
     const esMiembro = (area: string) => misAreas.some((m) => m.area_id === area)
+    const esMiembroDe = (area: string, persona: string) =>
+      miembros.some((m) => m.area_id === area && m.profile_id === persona)
     return {
       esAdmin,
       esLider,
       esMiembro,
       puedeMarcar: (responsable: string) => esAdmin || responsable === yo?.id,
+      /** Igual que privado.puede_editar_tarea en la base (CLAUDE.md §2: editar / eliminar). */
+      puedeEditarTarea: (t: { creado_por: string | null; responsable_id: string; frecuencia: string; areas: string[] }) => {
+        if (esAdmin) return true
+        if (!yo || (t.creado_por !== yo.id && t.responsable_id !== yo.id) || t.areas.length === 0) return false
+        const enCadaArea = t.areas.every(
+          (a) => esLider(a) || (t.frecuencia === 'unica' && t.responsable_id === yo.id && esMiembro(a)),
+        )
+        return enCadaArea && t.areas.some((a) => esMiembroDe(a, t.responsable_id))
+      },
     }
   }, [yo, miembros])
 }

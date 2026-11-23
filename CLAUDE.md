@@ -2,7 +2,7 @@
 
 > Especificación viva del proyecto. Claude la lee siempre antes de trabajar en esta carpeta.
 > Si una decisión cambia, se actualiza **este archivo** en el mismo cambio que la implementa.
-> Versión: 2.1 · Última revisión: 18 nov 2026 (fase 2: login y app diaria)
+> Versión: 2.2 · Última revisión: 23 nov 2026 (eliminar tareas)
 
 ---
 
@@ -92,8 +92,10 @@ Las áreas se crean, editan y archivan desde Configuración (solo admin). Archiv
   - **Omitida**: la marca la responsable (o la admin) **escribiendo un motivo** obligatorio. Le llega un aviso a la admin.
     No cuenta como incumplida ni suma al total del cumplimiento.
   - Se puede volver de `hecha` u `omitida` a `pendiente`.
-- **Eliminar una tarea = archivarla**: deja de generar instancias y se borran solo sus instancias **futuras pendientes**.
-  Las pasadas (hechas, omitidas, vencidas) quedan para el historial.
+- **Eliminar una tarea = archivarla** (botón "Eliminar tarea" en el detalle, con confirmación): deja de generar
+  instancias y se borran **todos sus días pendientes, también los vencidos** que nunca se hicieron (no cuentan como
+  incumplidos). Los días hechos u omitidos quedan en el historial pero ya no se muestran en Hoy. Si elimina alguien
+  que no es la admin, a la admin le llega una alerta. (Decisión de Cami, 23 nov 2026.)
 - **Editar una tarea**: las instancias pendientes de hoy en adelante se actualizan en su mismo día (título, responsable, hora…),
   se borran las de días que ya no corresponden y se generan las que falten. Como hay una sola instancia por día y por tarea,
   cambiar la hora nunca duplica (bug de la v1).
@@ -188,6 +190,7 @@ Una función programada revisa **cada hora**. Silencio de 22:00 a 8:00 (lo acumu
 **Alertas para la admin (campana, en vivo)** — Cami confirmó que sirven:
 - Tarea de otra persona vencida sin completar.
 - Tarea omitida (con el motivo).
+- Tarea eliminada por otra persona.
 - Objetivo que pasa a "Atrasado" (una vez por objetivo y por semana).
 - Área por debajo del 70 % al día al cierre de la semana (domingo 20:00).
 Push de estas alertas a la admin: opcional, desactivado por defecto.
@@ -247,6 +250,9 @@ reemplazar con `VITE_SUPABASE_URL` / `VITE_SUPABASE_KEY`). Nunca poner la clave 
 Cloudflare Workers Builds (cuenta de aromascielo@gmail.com) está conectado al repositorio con carpeta raíz `/web`,
 build `npm run build`, deploy `npx wrangler deploy` y versiones de prueba activadas para las ramas (`npx wrangler preview`).
 La app de Cloudflare en GitHub tiene acceso solo a `ritual-diario`.
+
+**Plan gratis de Supabase:** un proyecto sin uso por varios días se pausa y la app muestra "Sin conexión".
+Se reactiva desde el panel de Supabase o con `restore_project` (pasó el 23 nov 2026).
 
 Mientras se construye, `ritual-diario` funciona como entorno de prueba. Antes del cambio (fase 6) se borran los datos de prueba
 y se cargan los reales. Después se crea un segundo proyecto solo para pruebas (el plan gratis permite 2 activos).
@@ -346,7 +352,7 @@ Candela será líder de sus tres áreas (Cami también las gestiona como admin);
 - Cálculos: `cumplimiento(desde, hasta)`, `avance_objetivos(fecha)`, `evolucion_objetivo(id)`.
 - Personas (admin): `invitar_persona`, `actualizar_persona`, `asignar_area`, `cancelar_invitacion`; cada una: `actualizar_mi_nombre`.
 - Escritura directa con RLS: áreas y planes (admin), objetivos (admin / líder del área), aportes manuales, comentarios, ventas, suscripciones push, marcar alertas leídas.
-- Pruebas: `supabase/tests/permisos.sql` (24 casos; se deshace solo al terminar).
+- Pruebas: `supabase/tests/permisos.sql` (24 casos) y `supabase/tests/eliminar_tarea.sql` (8 casos); se deshacen solas al terminar.
 
 ---
 

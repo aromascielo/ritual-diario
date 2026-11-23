@@ -400,3 +400,4 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .objetivo-numeros strong { color: var(--texto); }
 .etiqueta-atrasado { flex: none; padding: 2px 10px; border-radius: 10px; background: var(--naranja); color: #fff; font-size: 0.8rem; font-weight: 700; }
 .version { margin-top: 8px; }
+.enlace-peligro { align-self: flex-start; color: var(--peligro); font-weight: 600; text-decoration: none; padding-left: 0; }

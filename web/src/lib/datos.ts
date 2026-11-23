@@ -10,8 +10,9 @@ const CAMPOS_INSTANCIA =
 
 type FilaInstancia = Omit<Instancia, 'areas'> & { task_instance_areas: { area_id: string }[] | null }
 
-function aInstancia(f: FilaInstancia): Instancia {
-  const { task_instance_areas, ...resto } = f
+function aInstancia(f: FilaInstancia & { task_templates?: unknown }): Instancia {
+  const { task_instance_areas, task_templates: _plantilla, ...resto } = f
+  void _plantilla
   return { ...resto, areas: (task_instance_areas ?? []).map((x) => x.area_id) }
 }
 
@@ -33,7 +34,13 @@ export async function traerEquipo(): Promise<{ perfiles: Perfil[]; areas: Area[]
 // Tareas -------------------------------------------------------------------
 /** Tareas de un día (de una persona, o de todo el equipo si persona es null). */
 export async function tareasDelDia(fecha: string, persona: string | null): Promise<Instancia[]> {
-  let q = supabase.from('task_instances').select(CAMPOS_INSTANCIA).eq('fecha', fecha).order('fecha_limite')
+  // Solo tareas no eliminadas: lo hecho de una tarea eliminada queda en el historial pero no se muestra en Hoy.
+  let q = supabase
+    .from('task_instances')
+    .select(CAMPOS_INSTANCIA + ',task_templates!inner(activa)')
+    .eq('fecha', fecha)
+    .eq('task_templates.activa', true)
+    .order('fecha_limite')
   if (persona) q = q.eq('responsable_id', persona)
   return (ok(await q) as unknown as FilaInstancia[] ?? []).map(aInstancia)
 }
@@ -84,6 +91,12 @@ export async function marcarTarea(id: string, estado: Estado, motivo?: string, c
     p_motivo: motivo ?? null,
     p_cantidad: cantidad ?? null,
   }))
+}
+
+/** Elimina la tarea: deja de repetirse y se borran todos sus días pendientes (también los vencidos).
+ *  Lo hecho u omitido queda en el historial. La base valida el permiso. */
+export async function eliminarTarea(templateId: string): Promise<void> {
+  ok(await supabase.rpc('archivar_tarea', { p_id: templateId }))
 }
 
 export interface NuevaTarea {
