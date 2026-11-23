@@ -470,3 +470,4 @@ button.objetivo { width: 100%; text-align: left; border: none; cursor: pointer; 
 .canales { display: flex; flex-direction: column; gap: 6px; }
 .canales li { display: flex; justify-content: space-between; gap: 8px; }
 .input-monto { font-size: 1.5rem; font-weight: 600; }
+.fila-peso { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 4px; }

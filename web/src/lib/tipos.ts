@@ -95,6 +95,7 @@ export interface Plantilla {
   dia_mes: number | null
   hora_limite: string | null // 'HH:MM:SS'
   objective_id: string | null
+  peso: number
   activa: boolean
   areas: string[]
 }

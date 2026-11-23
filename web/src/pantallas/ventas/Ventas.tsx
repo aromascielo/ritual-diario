@@ -65,7 +65,10 @@ export function Ventas() {
     setGuardando(true)
     setErrorForm(null)
     try {
-      await guardarVenta(editando.id, { ...editando.d, monto }, yo.id)
+      // Mismo cliente escrito distinto ("hotel paihuen" / "Hotel Paihuen"): se guarda como ya estaba cargado.
+      const igual = clientes.find((c) => c.toLowerCase() === editando.d.cliente.trim().toLowerCase())
+      const cliente = editando.d.canal === 'mayorista' ? (igual ?? editando.d.cliente.trim()) : ''
+      await guardarVenta(editando.id, { ...editando.d, cliente, monto }, yo.id)
       avisar(editando.id ? 'Venta guardada' : `Venta de ${pesos.format(monto)} cargada 🌿`)
       const mesVenta = editando.d.fecha.slice(0, 8) + '01'
       setEditando(null)

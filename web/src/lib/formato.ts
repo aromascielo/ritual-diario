@@ -60,6 +60,7 @@ export function formatoValor(o: Pick<Objetivo, 'tipo_medicion' | 'unidad'>, v: n
     case 'tareas':
     case 'proporcion_ventas':
     case 'cumplimiento': return `${numero.format(v)} %`
+    case 'clientes_mayoristas': return `${numero.format(v)} ${v === 1 ? 'cliente' : 'clientes'}`
     default: return `${numero.format(v)}${o.unidad ? ` ${o.unidad}` : ''}`
   }
 }

@@ -1,9 +1,9 @@
-import { useMemo, useState, type FormEvent } from 'react'
-import type { DatosTarea } from '../lib/datos'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { traerObjetivosTodos, type DatosTarea } from '../lib/datos'
 import { fechaLarga, hoyISO, sumarDias } from '../lib/fechas'
 import { DIAS_CORTOS, NOMBRES_FRECUENCIA } from '../lib/frecuencia'
 import { useSesion, usePermisos } from '../lib/sesion'
-import type { Frecuencia } from '../lib/tipos'
+import type { Frecuencia, Objetivo } from '../lib/tipos'
 import { mensajeDeError } from '../lib/supabase'
 
 const FRECUENCIAS: Frecuencia[] = ['unica', 'diaria', 'semanal', 'mensual']
@@ -32,8 +32,17 @@ export function FormTarea({ inicial, nueva, alGuardar, textoBoton }: {
   const [horaLimite, setHoraLimite] = useState(inicial.hora ?? '18:00')
   const [elegidas, setElegidas] = useState<string[]>(inicial.areas)
   const [responsable, setResponsable] = useState(inicial.responsable)
+  const [objetivo, setObjetivo] = useState<string | null>(inicial.objetivo)
+  const [peso, setPeso] = useState(inicial.peso)
+  const [objetivos, setObjetivos] = useState<Objetivo[]>([])
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    traerObjetivosTodos()
+      .then((os) => setObjetivos(os.filter((o) => o.estado === 'activo' && (o.tipo_medicion === 'tareas' || o.tipo_medicion === 'numerico'))))
+      .catch(() => setObjetivos([]))
+  }, [])
 
   // Áreas donde puede crear: la admin en todas; el resto, en las suyas (al editar se muestran también las que ya tenía).
   const areasPosibles = useMemo(
@@ -50,6 +59,10 @@ export function FormTarea({ inicial, nueva, alGuardar, textoBoton }: {
     const ids = new Set(miembros.filter((m) => elegidas.includes(m.area_id)).map((m) => m.profile_id))
     return activos.filter((p) => ids.has(p.id) || p.id === yo?.id)
   }, [perfiles, esAdmin, esLiderDeTodas, miembros, elegidas, yo])
+
+  // Objetivos a los que puede sumar: generales o de alguna de las áreas elegidas (más el que ya tenía).
+  const objetivosPosibles = objetivos.filter((o) => !o.area_id || elegidas.includes(o.area_id) || o.id === inicial.objetivo)
+  const objetivoElegido = objetivos.find((o) => o.id === objetivo)
 
   if (!yo) return null
   const responsableFinal = responsables.some((p) => p.id === responsable) ? responsable : yo.id
@@ -86,7 +99,8 @@ export function FormTarea({ inicial, nueva, alGuardar, textoBoton }: {
         dias: frecuencia === 'semanal' ? dias : [],
         diaMes: frecuencia === 'mensual' ? diaMes : null,
         hora: conHora ? horaLimite : null,
-        objetivo: inicial.objetivo,
+        objetivo: objetivoElegido && objetivosPosibles.includes(objetivoElegido) ? objetivo : null,
+        peso: objetivoElegido?.tipo_medicion === 'tareas' ? peso : 1,
       })
     } catch (err) {
       setError(mensajeDeError(err))
@@ -197,6 +211,29 @@ export function FormTarea({ inicial, nueva, alGuardar, textoBoton }: {
           <span className="valor-fijo">{perfiles.find((p) => p.id === responsableFinal)?.nombre ?? yo.nombre}{responsableFinal === yo.id ? ' (vos)' : ''}</span>
         )}
       </label>
+
+      {objetivosPosibles.length > 0 && (
+        <label className="campo">
+          <span>Suma a un objetivo (opcional)</span>
+          <select value={objetivo ?? ''} onChange={(e) => setObjetivo(e.target.value || null)}>
+            <option value="">No suma a ningún objetivo</option>
+            {objetivosPosibles.map((o) => <option key={o.id} value={o.id}>🎯 {o.titulo}</option>)}
+          </select>
+          {objetivoElegido?.tipo_medicion === 'numerico' && (
+            <span className="ayuda">Al tildarla te va a preguntar "¿cuántos?" y lo suma al objetivo.</span>
+          )}
+          {objetivoElegido?.tipo_medicion === 'tareas' && (
+            <span className="fila-peso">
+              <span className="ayuda">¿Cuánto pesa en el objetivo?</span>
+              {[1, 2, 3].map((n) => (
+                <button key={n} type="button" className={`chip${peso === n ? ' elegido' : ''}`} aria-pressed={peso === n} onClick={() => setPeso(n)}>
+                  {n === 1 ? 'Normal' : n === 2 ? 'Doble' : 'Triple'}
+                </button>
+              ))}
+            </span>
+          )}
+        </label>
+      )}
 
       <label className="campo">
         <span>Detalle (opcional)</span>

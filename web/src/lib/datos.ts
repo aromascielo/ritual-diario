@@ -123,6 +123,7 @@ export interface DatosTarea {
   diaMes: number | null // solo 'mensual' (0 = último día)
   hora: string | null // 'HH:MM' o null = sin horario
   objetivo: string | null
+  peso: number // cuánto aporta a un objetivo medido por tareas
 }
 
 /** Crea o edita una tarea (guardar_tarea valida permisos y genera los días). Devuelve el id de la plantilla. */
@@ -139,11 +140,12 @@ export async function guardarTarea(t: DatosTarea): Promise<string> {
     p_dia_mes: t.frecuencia === 'mensual' ? t.diaMes : null,
     p_hora_limite: t.hora,
     p_objective: t.objetivo,
+    p_peso: t.peso,
   })) as string
 }
 
 const CAMPOS_PLANTILLA =
-  'id,titulo,descripcion,responsable_id,creado_por,frecuencia,fecha_unica,dias_semana,dia_mes,hora_limite,objective_id,activa,' +
+  'id,titulo,descripcion,responsable_id,creado_por,frecuencia,fecha_unica,dias_semana,dia_mes,hora_limite,objective_id,peso,activa,' +
   'task_template_areas(area_id)'
 
 type FilaPlantilla = Omit<Plantilla, 'areas'> & { task_template_areas: { area_id: string }[] | null }

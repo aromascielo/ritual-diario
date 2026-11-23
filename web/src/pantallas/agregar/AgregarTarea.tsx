@@ -20,7 +20,7 @@ export function AgregarTarea() {
           textoBoton="Guardar tarea"
           inicial={{
             id: null, titulo: '', descripcion: '', responsable: yo.id, areas: [], frecuencia: 'unica',
-            fecha: hoyISO(), dias: [], diaMes: null, hora: null, objetivo: null,
+            fecha: hoyISO(), dias: [], diaMes: null, hora: null, objetivo: null, peso: 1,
           }}
           alGuardar={async (t) => {
             await guardarTarea(t)

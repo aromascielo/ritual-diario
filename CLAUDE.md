@@ -2,7 +2,7 @@
 
 > Especificación viva del proyecto. Claude la lee siempre antes de trabajar en esta carpeta.
 > Si una decisión cambia, se actualiza **este archivo** en el mismo cambio que la implementa.
-> Versión: 2.3 · Última revisión: 23 nov 2026 (fase 3: gestión)
+> Versión: 2.4 · Última revisión: 23 nov 2026 (fase 4: objetivos, Plan VEA y ventas)
 
 ---
 
@@ -164,8 +164,14 @@ Rutas con hash (`#/hoy`, `#/tarea/<id>`, `#/area/<id>`, `#/objetivo/<id>`, `#/ve
 1. **Hoy**: saludo y cantidad de tareas; bloque **Vencidas** (borde naranja); mis tareas de hoy por área con checkbox grande;
    interruptor "Ver todo el equipo"; botón "Agregar tarea". Tocar el texto de una tarea abre su **detalle**.
 2. **Detalle de tarea**: datos, estado, botones Hecha / Omitir (pide motivo) / Volver a pendiente, comentarios, editar (si tiene permiso).
-3. **Objetivos**: tarjetas con barra, % actual, marca de ritmo, días restantes, estado. Acceso a **Plan VEA**.
-4. **Plan VEA** y **Ventas** (carga y listado del mes).
+3. **Objetivos**: arriba el resumen del Plan VEA (abre `#/vea`); después objetivos por área y generales: barra, % actual,
+   marca de ritmo (rayita azul), días restantes, estado (En camino / Atrasado / Meta alcanzada / Cumplido); archivados aparte.
+   Detalle `#/objetivo/<id>`: avance, evolución mes a mes, cargas a mano (numéricos), editar, marcar cumplido, archivar.
+   Crear/editar en `#/objetivo-form/nuevo` o `#/objetivo-form/<id>` (admin; líder solo en su área; los del plan: solo admin).
+4. **Plan VEA** (`#/vea`): cada meta con el valor del mes y la evolución desde la base. **Ventas** (`#/ventas`): mes a mes,
+   totales por canal, % tienda online y clientes mayoristas (de `resumen_ventas`), cargar / editar / borrar una por una.
+   Un cliente mayorista escrito con otras mayúsculas se guarda con el nombre que ya estaba cargado.
+   Al crear o editar una tarea se puede elegir el objetivo al que suma (tareas o numérico) y su peso (normal, doble, triple).
 5. **Áreas**: grilla con % al día de la semana; detalle con pestañas Hoy / Semana / Mes y filtros.
 6. **Equipo**: tarjeta por persona con áreas, pendientes, vencidas y % al día de semana y mes.
 7. **Alertas** (admin): lista en vivo con badge.
@@ -352,11 +358,12 @@ Candela será líder de sus tres áreas (Cami también las gestiona como admin);
 
 ### Funciones de la base (resumen para la app)
 - Tareas: `guardar_tarea`, `archivar_tarea`, `marcar_tarea(instancia, 'hecha'|'omitida'|'pendiente', motivo, cantidad)`.
-- Cálculos: `cumplimiento(desde, hasta)`, `avance_objetivos(fecha)`, `evolucion_objetivo(id)`.
+- Cálculos: `cumplimiento(desde, hasta)`, `avance_objetivos(fecha)`, `evolucion_objetivo(id)`, `resumen_ventas(desde, hasta)`.
 - Personas (admin): `invitar_persona(email, nombre, rol, carga_ventas, areas)` (las áreas se aplican solas en el primer
   ingreso), `actualizar_persona`, `asignar_area` (rol null = sacar del área), `cancelar_invitacion`; cada una: `actualizar_mi_nombre`.
 - Escritura directa con RLS: áreas y planes (admin), objetivos (admin / líder del área), aportes manuales, comentarios, ventas, suscripciones push, marcar alertas leídas.
-- Pruebas (se deshacen solas al terminar): `supabase/tests/permisos.sql` (24), `eliminar_tarea.sql` (8), `invitar_con_areas.sql` (8).
+- Pruebas (se deshacen solas al terminar): `supabase/tests/permisos.sql` (24), `eliminar_tarea.sql` (8), `invitar_con_areas.sql` (8),
+  `resumen_ventas.sql` (mismas cifras que el Plan VEA).
 
 ---
 

@@ -51,7 +51,7 @@ export function EditarTarea({ id }: { id: string }) {
         inicial={{
           id: p.id, titulo: p.titulo, descripcion: p.descripcion ?? '', responsable: p.responsable_id, areas: p.areas,
           frecuencia: p.frecuencia, fecha: p.fecha_unica, dias: p.dias_semana ?? [], diaMes: p.dia_mes,
-          hora: p.hora_limite ? p.hora_limite.slice(0, 5) : null, objetivo: p.objective_id,
+          hora: p.hora_limite ? p.hora_limite.slice(0, 5) : null, objetivo: p.objective_id, peso: p.peso ?? 1,
         }}
         alGuardar={async (t) => {
           await guardarTarea(t)

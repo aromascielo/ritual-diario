@@ -44,7 +44,7 @@ export function PlanVea() {
               <h1 className="titulo-serif">{plan.titulo}</h1>
               {plan.descripcion && <p className="saludo-resumen">{plan.descripcion}</p>}
               <p className="saludo-fecha">
-                Del {nombreMes(plan.fecha_inicio, true)} a {nombreMes(plan.fecha_fin, true)}
+                De {nombreMes(plan.fecha_inicio, true)} a {nombreMes(plan.fecha_fin, true)}
                 {diasRestantes(plan.fecha_fin) >= 0 && ` · faltan ${diasRestantes(plan.fecha_fin)} días`}
               </p>
             </section>
