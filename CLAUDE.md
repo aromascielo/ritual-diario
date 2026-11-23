@@ -297,12 +297,11 @@ App Aromas Claude/
 │   ├── PLAN.md               ← fases y estado actual
 │   └── instrucciones-proyecto.md  ← texto para las instrucciones del Proyecto en claude.ai
 ├── web/                      ← la app (lo único que se publica)
-│   ├── public/               ← manifest, íconos
+│   ├── public/               ← manifest, íconos y sw.js (service worker del push)
 │   └── src/
-│       ├── lib/              ← supabase, fechas, permisos, formato
+│       ├── lib/              ← supabase, fechas, permisos, formato, push, alertas
 │       ├── pantallas/        ← una carpeta por pantalla
-│       ├── componentes/      ← piezas reutilizables
-│   └── public/sw.js          ← service worker (push)
+│       └── componentes/      ← piezas reutilizables
 └── supabase/
     ├── migrations/           ← SQL versionado (estructura, permisos, funciones, cron)
     ├── seed.sql              ← datos de ejemplo SOLO para pruebas (sin mails reales)

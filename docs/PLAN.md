@@ -9,7 +9,7 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 | 2. App: lo diario | Login con código, Hoy, detalle de tarea (hecha / omitir con motivo / comentarios), agregar tarea con fecha | Cami en el celular (URL de prueba) | ✅ 23 nov 2026 |
 | 3. Gestión | Tareas (crear, editar, archivar; recurrentes para líderes), Áreas y Personas desde Configuración | Cami + Laura | 🧪 Hecha el 23 nov 2026; falta que la prueben Cami y Laura |
 | 4. Objetivos y VEA | Objetivos de todos los tipos, aportes, Plan VEA, carga de ventas | Cami + Laura (ventas) | 🧪 Hecha el 23 nov 2026; falta probarla |
-| 5. Seguimiento y avisos | Áreas y Equipo con % al día, push (previo, vencida, resumen, comentarios), campana de alertas | Cami (Android); iPhone con Candela | 🧪 Hecha el 23 nov 2026; falta que Cami active los avisos y los pruebe en su Android |
+| 5. Seguimiento y avisos | Áreas y Equipo con % al día, push (previo, vencida, resumen, comentarios), campana de alertas | Cami (Android); iPhone con Candela | 🧪 Hecha el 23 nov 2026; push probado en el Android de Cami (23 nov). Falta: aviso de comentario entre dos personas (con Laura) y revisar Áreas/Equipo con datos reales |
 | 6. Publicación y cambio | Cloudflare con GitHub, limpiar datos de prueba, cargar equipo y tareas reales, pasar a Laura, apagar Netlify | Todo el equipo | ⬜ |
 | 7. Sumar a Candela | Alta como líder de Redes, Campañas y Publicidad, tareas, prueba en iPhone | Candela | ⬜ (ene 2027) |
 
@@ -25,8 +25,8 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - [ ] Fase 4: probar Objetivos (crear uno, cargar avance, marcar cumplido), Plan VEA y Ventas (cargar ventas reales de noviembre).
 - [ ] Fase 3: invitar a Laura desde Configuración → Personas (con sus 5 áreas como líder y "carga ventas") y pedirle que pruebe.
   Laura sigue usando la app vieja hasta la fase 6.
-- [ ] Fase 5: mirar Áreas y Equipo; en el celular, Configuración → Notificaciones → "Activar avisos" → "Probar aviso".
-  Comentar una tarea de otra persona (o pedirle a Laura que comente una tuya) y ver que llegue el aviso.
+- [x] Fase 5: avisos activados en el Android de Cami; "Probar aviso" llegó (23 nov).
+- [ ] Fase 5: mirar Áreas, Equipo y la campana. El jueves, con Laura: que active los avisos y que comente una tarea tuya.
 - [x] Aprobar la migración `pg_net_en_extensions` (aprobada el 23 nov).
 
 ## Estado de la base de datos (proyecto `ritual-diario`, `oehrvzijfktxcoyfommj`)
@@ -38,7 +38,7 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
   invitar_con_areas 8/8, resumen_ventas (coincide con el Plan VEA).
 - Cron activos: `generar-instancias` (00:05 hora Argentina) y `avisos` (cada hora en punto).
 - Edge Function `notificaciones` publicada (versión 1). Claves en Vault: `vapid_publica`, `vapid_privada`, `vapid_sujeto`,
-  `notif_url`, `notif_clave`. Probada: la base llama a la función y responde bien (todavía sin celulares suscriptos).
+  `notif_url`, `notif_clave`. Probada de punta a punta: el aviso de prueba llegó al Android de Cami (23 nov).
 - Pruebas de avisos: `supabase/tests/avisos.sql` → 17/17 OK.
 - Pruebas: `supabase/tests/permisos.sql` → 24/24 OK. Cálculo VEA verificado con ventas de ejemplo.
 
