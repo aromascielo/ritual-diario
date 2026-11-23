@@ -8,16 +8,11 @@ import {
 } from '../../lib/datos'
 import { fechaHora, fechaLarga, hora, yaPaso } from '../../lib/fechas'
 import { useSesion, usePermisos } from '../../lib/sesion'
-import { volver } from '../../lib/ruta'
+import { ir, volver } from '../../lib/ruta'
+import { describirFrecuencia } from '../../lib/frecuencia'
 import { mensajeDeError } from '../../lib/supabase'
 import type { Area, Comentario, ObjetivoBreve } from '../../lib/tipos'
 
-const FRECUENCIAS: Record<string, string> = {
-  unica: 'Una sola vez',
-  diaria: 'Todos los días',
-  semanal: 'Todas las semanas',
-  mensual: 'Todos los meses',
-}
 
 export function DetalleTarea({ id }: { id: string }) {
   const { yo, areas, perfiles } = useSesion()
@@ -111,7 +106,7 @@ export function DetalleTarea({ id }: { id: string }) {
   const puede = puedeMarcar(i.responsable_id)
   const ocupada = marcar.ocupada === i.id
   const objetivo = objetivos.find((o) => o.id === i.objective_id)
-  const puedeEliminar = puedeEditarTarea({
+  const puedeEliminar = detalle.activa && puedeEditarTarea({
     creado_por: detalle.creado_por, responsable_id: i.responsable_id, frecuencia: detalle.frecuencia, areas: i.areas,
   })
   const seRepite = detalle.frecuencia !== 'unica'
@@ -135,7 +130,7 @@ export function DetalleTarea({ id }: { id: string }) {
             <div><dt>Responsable</dt><dd>{nombre(i.responsable_id)}</dd></div>
             <div><dt>Día</dt><dd>{fechaLarga(i.fecha)}</dd></div>
             <div><dt>Hasta</dt><dd>{i.sin_horario ? 'Sin horario (hasta las 23:59)' : `${hora(i.fecha_limite)} h`}</dd></div>
-            <div><dt>Se repite</dt><dd>{FRECUENCIAS[detalle.frecuencia] ?? detalle.frecuencia}</dd></div>
+            <div><dt>Se repite</dt><dd>{detalle.frecuencia === 'unica' ? 'No, es de una sola vez' : describirFrecuencia(detalle)}</dd></div>
             {objetivo && <div><dt>Suma a</dt><dd>{objetivo.titulo}</dd></div>}
             {detalle.creado_por && <div><dt>La creó</dt><dd>{nombre(detalle.creado_por)}</dd></div>}
             {i.estado === 'hecha' && i.completada_at && (
@@ -167,10 +162,12 @@ export function DetalleTarea({ id }: { id: string }) {
           )}
 
           {puedeEliminar && (
-            <button className="enlace enlace-peligro" onClick={() => setConfirmarEliminar(true)}>
-              🗑️ Eliminar tarea
-            </button>
+            <div className="acciones-secundarias">
+              <button className="enlace" onClick={() => ir(`editar/${i.template_id}`)}>✏️ Editar tarea</button>
+              <button className="enlace enlace-peligro" onClick={() => setConfirmarEliminar(true)}>🗑️ Eliminar tarea</button>
+            </div>
           )}
+          {!detalle.activa && <p className="ayuda">Esta tarea fue eliminada; queda solo en el historial.</p>}
         </section>
 
         <section className="bloque" aria-label="Comentarios">

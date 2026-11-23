@@ -8,6 +8,11 @@ import { AgregarTarea } from './pantallas/agregar/AgregarTarea'
 import { Objetivos } from './pantallas/objetivos/Objetivos'
 import { Configuracion } from './pantallas/config/Configuracion'
 import { Pronto } from './pantallas/pronto/Pronto'
+import { EditarTarea } from './pantallas/editar/EditarTarea'
+import { ConfigTareas } from './pantallas/config/ConfigTareas'
+import { ConfigAreas } from './pantallas/config/ConfigAreas'
+import { ConfigPersonas } from './pantallas/config/ConfigPersonas'
+import { Persona } from './pantallas/config/Persona'
 
 export function App() {
   const { cargando, error, session, yo, salir, recargarEquipo } = useSesion()
@@ -45,14 +50,23 @@ export function App() {
     case 'equipo':
       pantalla = <Pronto titulo="Equipo" texto="Acá vas a ver a cada persona con sus pendientes y su % al día. Llega en la fase 5." />
       break
+    case 'editar':
+      pantalla = ruta.id ? <EditarTarea key={ruta.id} id={ruta.id} /> : <Hoy />
+      break
+    case 'persona':
+      pantalla = ruta.id ? <Persona key={ruta.id} id={ruta.id} /> : <ConfigPersonas />
+      break
     case 'config':
-      pantalla = <Configuracion />
+      pantalla = ruta.id === 'tareas' ? <ConfigTareas />
+        : ruta.id === 'areas' ? <ConfigAreas />
+        : ruta.id === 'personas' ? <ConfigPersonas />
+        : <Configuracion />
       break
     default:
       pantalla = <Hoy />
   }
 
-  const pestana = ['hoy', 'objetivos', 'areas', 'equipo'].includes(ruta.pantalla) ? ruta.pantalla : ruta.pantalla === 'tarea' || ruta.pantalla === 'agregar' ? 'hoy' : ''
+  const pestana = ['hoy', 'objetivos', 'areas', 'equipo'].includes(ruta.pantalla) ? ruta.pantalla : ['tarea', 'agregar', 'editar'].includes(ruta.pantalla) ? 'hoy' : ''
   return (
     <div className="app">
       {pantalla}

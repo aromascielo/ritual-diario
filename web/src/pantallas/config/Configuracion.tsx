@@ -3,13 +3,15 @@ import { Encabezado } from '../../componentes/Piezas'
 import { Dialogo } from '../../componentes/Dialogo'
 import { useAvisar } from '../../componentes/Avisos'
 import { actualizarMiNombre } from '../../lib/datos'
-import { useSesion } from '../../lib/sesion'
+import { useSesion, usePermisos } from '../../lib/sesion'
+import { ir } from '../../lib/ruta'
 import { mensajeDeError } from '../../lib/supabase'
 import { aplicarTema, temaGuardado, type Tema } from '../../lib/tema'
 
 export function Configuracion() {
   const { yo, salir, recargarEquipo, miembros, areas } = useSesion()
   const avisar = useAvisar()
+  const { esAdmin } = usePermisos()
   const [nombre, setNombre] = useState(yo?.nombre ?? '')
   const [tema, setTema] = useState<Tema>(temaGuardado)
   const [confirmarSalida, setConfirmarSalida] = useState(false)
@@ -70,13 +72,36 @@ export function Configuracion() {
           </div>
         </section>
 
-        <section className="tarjeta formulario">
-          <h2 className="bloque-titulo">Próximamente</h2>
-          <p className="ayuda">Tareas recurrentes, áreas, personas y notificaciones se configuran acá a partir de la fase 3.</p>
-        </section>
+        <ul className="lista-config">
+          <li>
+            <button className="tarjeta fila-config" onClick={() => ir('config/tareas')}>
+              <span className="fila-config-emoji" aria-hidden="true">📋</span>
+              <span className="fila-config-texto"><strong>Tareas</strong><span className="ayuda">Todas las tareas: las que se repiten y las de una vez</span></span>
+              <span className="fila-flecha" aria-hidden="true">›</span>
+            </button>
+          </li>
+          {esAdmin && (
+            <>
+              <li>
+                <button className="tarjeta fila-config" onClick={() => ir('config/areas')}>
+                  <span className="fila-config-emoji" aria-hidden="true">🗂️</span>
+                  <span className="fila-config-texto"><strong>Áreas</strong><span className="ayuda">Crear, editar y archivar áreas</span></span>
+                  <span className="fila-flecha" aria-hidden="true">›</span>
+                </button>
+              </li>
+              <li>
+                <button className="tarjeta fila-config" onClick={() => ir('config/personas')}>
+                  <span className="fila-config-emoji" aria-hidden="true">👥</span>
+                  <span className="fila-config-texto"><strong>Personas</strong><span className="ayuda">Invitar, roles, áreas y bajas</span></span>
+                  <span className="fila-flecha" aria-hidden="true">›</span>
+                </button>
+              </li>
+            </>
+          )}
+        </ul>
 
         <button className="boton boton-secundario boton-ancho" onClick={() => setConfirmarSalida(true)}>Cerrar sesión</button>
-        <p className="ayuda centrado version">Ritual Diario v2 · fase 2</p>
+        <p className="ayuda centrado version">Ritual Diario v2 · fase 3</p>
       </main>
       <Dialogo
         titulo="¿Cerrar sesión?"

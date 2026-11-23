@@ -2,7 +2,7 @@
 
 > Especificación viva del proyecto. Claude la lee siempre antes de trabajar en esta carpeta.
 > Si una decisión cambia, se actualiza **este archivo** en el mismo cambio que la implementa.
-> Versión: 2.2 · Última revisión: 23 nov 2026 (eliminar tareas)
+> Versión: 2.3 · Última revisión: 23 nov 2026 (fase 3: gestión)
 
 ---
 
@@ -169,7 +169,10 @@ Rutas con hash (`#/hoy`, `#/tarea/<id>`, `#/area/<id>`, `#/objetivo/<id>`, `#/ve
 5. **Áreas**: grilla con % al día de la semana; detalle con pestañas Hoy / Semana / Mes y filtros.
 6. **Equipo**: tarjeta por persona con áreas, pendientes, vencidas y % al día de semana y mes.
 7. **Alertas** (admin): lista en vivo con badge.
-8. **Configuración**: Tareas, Áreas, Personas (alta por mail, rol, áreas y rol por área, baja), Notificaciones, Apariencia, Cerrar sesión.
+8. **Configuración**: Tareas (lista de todas, por área, tocar = editar o eliminar), Áreas (admin: crear, editar emoji/color/orden,
+   archivar), Personas (admin: invitar por mail **eligiendo rol y áreas desde la invitación**, editar rol / "carga ventas" /
+   áreas, dar de baja o reactivar, cancelar invitaciones), Notificaciones, Apariencia, Cerrar sesión.
+   Rutas: `#/config/tareas`, `#/config/areas`, `#/config/personas`, `#/persona/<id>`, `#/editar/<plantilla>`, `#/agregar`.
 
 Estados vacíos amables ("Todo hecho por hoy 🌿"). Nada de `alert()`/`prompt()`/`confirm()` del navegador: diálogos propios.
 
@@ -288,7 +291,7 @@ App Aromas Claude/
 
 ```
 profiles            id (= auth.users.id), nombre, email, rol ('admin'|'integrante'), activo, carga_ventas, avatar_url, created_at
-team_invites        email, nombre, rol, carga_ventas, invitado_por, created_at
+team_invites        email, nombre, rol, carga_ventas, invitado_por, areas jsonb [{area_id, rol_area}], created_at
 areas               id, nombre, descripcion, color, emoji, orden, activa
 area_members        area_id, profile_id, rol_area ('lider'|'miembro')
 
@@ -350,9 +353,10 @@ Candela será líder de sus tres áreas (Cami también las gestiona como admin);
 ### Funciones de la base (resumen para la app)
 - Tareas: `guardar_tarea`, `archivar_tarea`, `marcar_tarea(instancia, 'hecha'|'omitida'|'pendiente', motivo, cantidad)`.
 - Cálculos: `cumplimiento(desde, hasta)`, `avance_objetivos(fecha)`, `evolucion_objetivo(id)`.
-- Personas (admin): `invitar_persona`, `actualizar_persona`, `asignar_area`, `cancelar_invitacion`; cada una: `actualizar_mi_nombre`.
+- Personas (admin): `invitar_persona(email, nombre, rol, carga_ventas, areas)` (las áreas se aplican solas en el primer
+  ingreso), `actualizar_persona`, `asignar_area` (rol null = sacar del área), `cancelar_invitacion`; cada una: `actualizar_mi_nombre`.
 - Escritura directa con RLS: áreas y planes (admin), objetivos (admin / líder del área), aportes manuales, comentarios, ventas, suscripciones push, marcar alertas leídas.
-- Pruebas: `supabase/tests/permisos.sql` (24 casos) y `supabase/tests/eliminar_tarea.sql` (8 casos); se deshacen solas al terminar.
+- Pruebas (se deshacen solas al terminar): `supabase/tests/permisos.sql` (24), `eliminar_tarea.sql` (8), `invitar_con_areas.sql` (8).
 
 ---
 

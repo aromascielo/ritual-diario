@@ -82,3 +82,33 @@ export interface Cumplimiento {
   vencidas: number
   porcentaje: number | null
 }
+
+export interface Plantilla {
+  id: string
+  titulo: string
+  descripcion: string | null
+  responsable_id: string
+  creado_por: string | null
+  frecuencia: Frecuencia
+  fecha_unica: string | null
+  dias_semana: number[] | null
+  dia_mes: number | null
+  hora_limite: string | null // 'HH:MM:SS'
+  objective_id: string | null
+  activa: boolean
+  areas: string[]
+}
+
+export interface AreaInvitada {
+  area_id: string
+  rol_area: RolArea
+}
+
+export interface Invitacion {
+  email: string
+  nombre: string
+  rol: Rol
+  carga_ventas: boolean
+  areas: AreaInvitada[]
+  created_at: string
+}

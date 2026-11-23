@@ -6,8 +6,8 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 |---|---|---|---|
 | 0. Base | Especificación v2, carpeta, proyecto Supabase `ritual-diario` (San Pablo), repositorio GitHub privado | Cami revisa la spec | ✅ (código subido a GitHub el 18 nov 2026) |
 | 1. Base de datos | Tablas v2, permisos (admin / líder / miembro), funciones de cálculo (cumplimiento al día, avance, VEA), generador de tareas, pruebas de permisos | Claude (pruebas automáticas) | ✅ 18 nov 2026 |
-| 2. App: lo diario | Login con código, Hoy, detalle de tarea (hecha / omitir con motivo / comentarios), agregar tarea con fecha | Cami en el celular (URL de prueba) | 🧪 Hecha, falta que Cami la pruebe (18 nov 2026) |
-| 3. Gestión | Tareas (crear, editar, archivar; recurrentes para líderes), Áreas y Personas desde Configuración | Cami + Laura | ⬜ |
+| 2. App: lo diario | Login con código, Hoy, detalle de tarea (hecha / omitir con motivo / comentarios), agregar tarea con fecha | Cami en el celular (URL de prueba) | ✅ 23 nov 2026 |
+| 3. Gestión | Tareas (crear, editar, archivar; recurrentes para líderes), Áreas y Personas desde Configuración | Cami + Laura | 🧪 Hecha el 23 nov 2026; falta que la prueben Cami y Laura |
 | 4. Objetivos y VEA | Objetivos de todos los tipos, aportes, Plan VEA, carga de ventas | Cami + Laura (ventas) | ⬜ |
 | 5. Seguimiento y avisos | Áreas y Equipo con % al día, push (previo, vencida, resumen, comentarios), campana de alertas | Cami (Android); iPhone con Candela | ⬜ |
 | 6. Publicación y cambio | Cloudflare con GitHub, limpiar datos de prueba, cargar equipo y tareas reales, pasar a Laura, apagar Netlify | Todo el equipo | ⬜ |
@@ -21,12 +21,15 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
 - [x] Fase 2: Gmail conectado en Supabase (SMTP) y plantillas con el código (lo hizo Claude desde el navegador, 18 nov).
 - [x] Fase 2: Cloudflare conectado con GitHub; app publicada en https://ritual-diario.aromascielo.workers.dev (18 nov).
 - [x] Fase 2: probar en el celular (Cami entró con el código el 23 nov).
-- [ ] Probar "Eliminar tarea" y seguir contando qué cambiar.
+- [ ] Fase 3: probar tareas que se repiten, editar, Configuración → Tareas / Áreas / Personas.
+- [ ] Fase 3: invitar a Laura desde Configuración → Personas (con sus 5 áreas como líder y "carga ventas") y pedirle que pruebe.
+  Laura sigue usando la app vieja hasta la fase 6.
 
 ## Estado de la base de datos (proyecto `ritual-diario`, `oehrvzijfktxcoyfommj`)
 - 6 migraciones aplicadas (`supabase/migrations/`). Cargadas: 8 áreas y el Plan VEA con sus 4 metas.
 - Personas: Cami (admin, "carga ventas", líder en las 8 áreas desde el 23 nov).
-- 7 migraciones (la 7.ª: `20261123120000_eliminar_tarea.sql`). Pruebas: permisos 24/24, eliminar_tarea 8/8.
+- 8 migraciones (las últimas: `20261123120000_eliminar_tarea.sql`, `20261123130000_areas_en_invitacion.sql`).
+  Pruebas: permisos 24/24, eliminar_tarea 8/8, invitar_con_areas 8/8.
 - Cron activo: `generar-instancias` (00:05 hora Argentina). El cron de notificaciones se agrega en la fase 5.
 - Pruebas: `supabase/tests/permisos.sql` → 24/24 OK. Cálculo VEA verificado con ventas de ejemplo.
 
@@ -45,3 +48,8 @@ Una fase por vez. Al terminar cada fase: probar, marcarla como hecha acá y anot
   datos intactos. Cami entró por primera vez y quedó como líder en las 8 áreas.
 - 23 nov 2026 — Eliminar tarea: migración `eliminar_tarea` (borra también los días vencidos sin hacer y avisa a la admin),
   botón "Eliminar tarea" en el detalle con confirmación, Hoy ya no muestra tareas eliminadas. Pruebas 8/8 y 24/24.
+- 23 nov 2026 — Fase 3 programada: formulario único para crear/editar tareas con frecuencia (una vez, todos los días,
+  días de la semana, una vez por mes; las que se repiten solo admin/líder), "Editar tarea" en el detalle, Configuración →
+  Tareas (lista y filtros), Áreas (admin) y Personas (admin: invitar con rol y áreas, editar, baja). Migración
+  `areas_en_invitacion` (las áreas elegidas al invitar se aplican en el primer ingreso). Probado en navegador con datos
+  simulados y contra la base (8/8). Sin cambios de permisos.

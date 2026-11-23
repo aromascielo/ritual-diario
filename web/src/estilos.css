@@ -401,3 +401,39 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .etiqueta-atrasado { flex: none; padding: 2px 10px; border-radius: 10px; background: var(--naranja); color: #fff; font-size: 0.8rem; font-weight: 700; }
 .version { margin-top: 8px; }
 .enlace-peligro { align-self: flex-start; color: var(--peligro); font-weight: 600; text-decoration: none; padding-left: 0; }
+.chips.dias { gap: 6px; }
+.chip-dia { min-width: 48px; padding: 8px 10px; }
+.chip:disabled { opacity: 0.45; cursor: default; }
+.acciones-secundarias { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.acciones-secundarias .enlace { padding-left: 0; }
+
+/* Configuración ---------------------------------------------------------- */
+.lista-config { display: flex; flex-direction: column; gap: 10px; }
+.lista-config.archivadas { opacity: 0.65; }
+.fila-config {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+  border: none; border-left: 5px solid transparent; cursor: pointer; min-height: 64px;
+}
+li.fila-config { cursor: default; }
+.fila-config-emoji { font-size: 1.5rem; width: 32px; text-align: center; flex: none; }
+.fila-config-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.fila-config-texto .ayuda { overflow-wrap: anywhere; }
+.avatar {
+  flex: none; width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--oliva); color: #fff; font-weight: 700;
+}
+.avatar-invitada { background: var(--borde); }
+.filtros { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.filtros select { width: auto; flex: 1; min-width: 180px; }
+.fila-texto:disabled { cursor: default; }
+.chip-emoji { font-size: 1.25rem; min-width: 48px; padding: 6px; }
+.muestra-color { width: 40px; height: 40px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
+.muestra-color.elegido { border-color: var(--texto); box-shadow: 0 0 0 2px var(--tarjeta) inset; }
+.areas-rol { display: flex; flex-direction: column; gap: 6px; }
+.areas-rol li { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; }
+.areas-rol-nombre { flex: 1; min-width: 0; }
+.chip-rol { min-width: 96px; }
+.chip-rol.rol-miembro { border-color: var(--azul); font-weight: 600; }
+.chip-rol.rol-lider { background: var(--oliva); border-color: var(--oliva); color: #fff; font-weight: 700; }
+.direccion-app { font-weight: 700; overflow-wrap: anywhere; padding: 10px 12px; border-radius: 12px; background: var(--fondo); user-select: all; }
+.aviso-baja { border-left: 4px solid var(--naranja); }

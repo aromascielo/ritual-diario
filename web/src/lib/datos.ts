@@ -2,7 +2,10 @@
 // acá solo se piden datos y se llaman las funciones RPC.
 import { supabase } from './supabase'
 import { sumarDias, hoyISO } from './fechas'
-import type { Area, Avance, Comentario, Cumplimiento, Estado, Instancia, Miembro, ObjetivoBreve, Perfil } from './tipos'
+import type {
+  Area, AreaInvitada, Avance, Comentario, Cumplimiento, Estado, Frecuencia, Instancia, Invitacion, Miembro, ObjetivoBreve, Perfil,
+  Plantilla, Rol, RolArea,
+} from './tipos'
 
 const CAMPOS_INSTANCIA =
   'id,template_id,responsable_id,titulo,fecha,fecha_limite,sin_horario,estado,objective_id,' +
@@ -61,18 +64,24 @@ export async function tareasVencidas(persona: string | null): Promise<Instancia[
 export interface DetalleTarea {
   instancia: Instancia
   descripcion: string | null
-  frecuencia: string
+  frecuencia: Frecuencia
   creado_por: string | null
+  dias_semana: number[] | null
+  dia_mes: number | null
+  activa: boolean
 }
 
 export async function traerTarea(id: string): Promise<DetalleTarea | null> {
   const r = await supabase
     .from('task_instances')
-    .select(CAMPOS_INSTANCIA + ',task_templates(descripcion,frecuencia,creado_por)')
+    .select(CAMPOS_INSTANCIA + ',task_templates(descripcion,frecuencia,creado_por,dias_semana,dia_mes,activa)')
     .eq('id', id)
     .maybeSingle()
   const fila = ok(r) as unknown as (FilaInstancia & {
-    task_templates: { descripcion: string | null; frecuencia: string; creado_por: string | null } | null
+    task_templates: {
+      descripcion: string | null; frecuencia: Frecuencia; creado_por: string | null
+      dias_semana: number[] | null; dia_mes: number | null; activa: boolean
+    } | null
   }) | null
   if (!fila) return null
   const { task_templates, ...inst } = fila
@@ -81,6 +90,9 @@ export async function traerTarea(id: string): Promise<DetalleTarea | null> {
     descripcion: task_templates?.descripcion ?? null,
     frecuencia: task_templates?.frecuencia ?? 'unica',
     creado_por: task_templates?.creado_por ?? null,
+    dias_semana: task_templates?.dias_semana ?? null,
+    dia_mes: task_templates?.dia_mes ?? null,
+    activa: task_templates?.activa ?? false,
   }
 }
 
@@ -99,28 +111,56 @@ export async function eliminarTarea(templateId: string): Promise<void> {
   ok(await supabase.rpc('archivar_tarea', { p_id: templateId }))
 }
 
-export interface NuevaTarea {
+export interface DatosTarea {
+  id: string | null // null = tarea nueva
   titulo: string
   descripcion: string
   responsable: string
   areas: string[]
-  fecha: string
+  frecuencia: Frecuencia
+  fecha: string | null // solo 'unica'
+  dias: number[] // solo 'semanal' (1 = lunes … 7 = domingo)
+  diaMes: number | null // solo 'mensual' (0 = último día)
   hora: string | null // 'HH:MM' o null = sin horario
   objetivo: string | null
 }
 
-export async function crearTareaUnica(t: NuevaTarea): Promise<string> {
+/** Crea o edita una tarea (guardar_tarea valida permisos y genera los días). Devuelve el id de la plantilla. */
+export async function guardarTarea(t: DatosTarea): Promise<string> {
   return ok(await supabase.rpc('guardar_tarea', {
-    p_id: null,
+    p_id: t.id,
     p_titulo: t.titulo,
     p_responsable: t.responsable,
-    p_frecuencia: 'unica',
+    p_frecuencia: t.frecuencia,
     p_areas: t.areas,
     p_descripcion: t.descripcion || null,
-    p_fecha_unica: t.fecha,
+    p_fecha_unica: t.frecuencia === 'unica' ? t.fecha : null,
+    p_dias_semana: t.frecuencia === 'semanal' ? t.dias : null,
+    p_dia_mes: t.frecuencia === 'mensual' ? t.diaMes : null,
     p_hora_limite: t.hora,
     p_objective: t.objetivo,
   })) as string
+}
+
+const CAMPOS_PLANTILLA =
+  'id,titulo,descripcion,responsable_id,creado_por,frecuencia,fecha_unica,dias_semana,dia_mes,hora_limite,objective_id,activa,' +
+  'task_template_areas(area_id)'
+
+type FilaPlantilla = Omit<Plantilla, 'areas'> & { task_template_areas: { area_id: string }[] | null }
+function aPlantilla(f: FilaPlantilla): Plantilla {
+  const { task_template_areas, ...resto } = f
+  return { ...resto, areas: (task_template_areas ?? []).map((x) => x.area_id) }
+}
+
+export async function traerPlantilla(id: string): Promise<Plantilla | null> {
+  const fila = ok(await supabase.from('task_templates').select(CAMPOS_PLANTILLA).eq('id', id).maybeSingle()) as unknown as FilaPlantilla | null
+  return fila ? aPlantilla(fila) : null
+}
+
+/** Tareas activas (las eliminadas no se listan). */
+export async function traerPlantillas(): Promise<Plantilla[]> {
+  const filas = ok(await supabase.from('task_templates').select(CAMPOS_PLANTILLA).eq('activa', true).order('titulo')) as unknown as FilaPlantilla[]
+  return (filas ?? []).map(aPlantilla)
 }
 
 /** Instancia de una plantilla en una fecha (para abrir la tarea recién creada). */
@@ -165,4 +205,46 @@ export async function cumplimiento(desde: string, hasta: string): Promise<Cumpli
 
 export async function actualizarMiNombre(nombre: string): Promise<void> {
   ok(await supabase.rpc('actualizar_mi_nombre', { p_nombre: nombre }))
+}
+
+// Áreas (solo admin; la base lo exige con RLS) ------------------------------------
+export interface DatosArea {
+  nombre: string
+  descripcion: string
+  emoji: string
+  color: string
+  orden: number
+  activa: boolean
+}
+
+export async function guardarArea(id: string | null, a: DatosArea): Promise<void> {
+  const fila = { ...a, nombre: a.nombre.trim(), descripcion: a.descripcion.trim() || null }
+  if (id) ok(await supabase.from('areas').update(fila).eq('id', id))
+  else ok(await supabase.from('areas').insert(fila))
+}
+
+// Personas (solo admin; las funciones lo exigen) -----------------------------------
+export async function traerInvitaciones(): Promise<Invitacion[]> {
+  return ok(await supabase.from('team_invites').select('email,nombre,rol,carga_ventas,areas,created_at').order('created_at')) ?? []
+}
+
+export async function invitarPersona(email: string, nombre: string, rol: Rol, cargaVentas: boolean, areas: AreaInvitada[]): Promise<void> {
+  ok(await supabase.rpc('invitar_persona', {
+    p_email: email, p_nombre: nombre, p_rol: rol, p_carga_ventas: cargaVentas, p_areas: areas,
+  }))
+}
+
+export async function cancelarInvitacion(email: string): Promise<void> {
+  ok(await supabase.rpc('cancelar_invitacion', { p_email: email }))
+}
+
+export async function actualizarPersona(id: string, nombre: string, rol: Rol, activo: boolean, cargaVentas: boolean): Promise<void> {
+  ok(await supabase.rpc('actualizar_persona', {
+    p_id: id, p_nombre: nombre, p_rol: rol, p_activo: activo, p_carga_ventas: cargaVentas,
+  }))
+}
+
+/** rol null = sacar a la persona del área. */
+export async function asignarArea(persona: string, area: string, rol: RolArea | null): Promise<void> {
+  ok(await supabase.rpc('asignar_area', { p_persona: persona, p_area: area, p_rol_area: rol }))
 }
